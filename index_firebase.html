@@ -1,0 +1,1768 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>9-D Sınıf Portalı | Süleyman Demirel Fen Lisesi</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Firebase v8 (Compat) - Global namespace'de çalışır, mevcut kodu bozmaz -->
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+    <style>
+        :root {
+            --primary: #6366f1;
+            --primary-dark: #4f46e5;
+            --secondary: #ec4899;
+            --accent: #06b6d4;
+            --bg: #0f172a;
+            --surface: #1e293b;
+            --surface-light: #334155;
+            --text: #f1f5f9;
+            --text-muted: #94a3b8;
+            --border: #334155;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --glass: rgba(30, 41, 59, 0.7);
+            --shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+        }
+        .light-mode {
+            --bg: #f8fafc;
+            --surface: #ffffff;
+            --surface-light: #f1f5f9;
+            --text: #0f172a;
+            --text-muted: #64748b;
+            --border: #e2e8f0;
+            --glass: rgba(255, 255, 255, 0.8);
+            --shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.15);
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+            overflow-x: hidden;
+            transition: all 0.3s ease;
+        }
+        .bg-animation {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            z-index: -1;
+            background: 
+                radial-gradient(circle at 20% 50%, rgba(99, 102, 241, 0.15) 0%, transparent 50%),
+                radial-gradient(circle at 80% 80%, rgba(236, 72, 153, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 40% 20%, rgba(6, 182, 212, 0.1) 0%, transparent 50%);
+        }
+        .app-container { display: flex; min-height: 100vh; }
+        .sidebar {
+            width: 280px;
+            background: var(--glass);
+            backdrop-filter: blur(20px);
+            border-right: 1px solid var(--border);
+            padding: 2rem 1.5rem;
+            position: fixed;
+            height: 100vh;
+            overflow-y: auto;
+            z-index: 100;
+            transition: transform 0.3s ease;
+        }
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 2rem;
+            padding-bottom: 1.5rem;
+            border-bottom: 1px solid var(--border);
+        }
+        .logo-icon {
+            width: 50px; height: 50px;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            color: white;
+            box-shadow: 0 10px 20px -5px rgba(99, 102, 241, 0.4);
+        }
+        .logo-text h1 { font-size: 1.25rem; font-weight: 800; letter-spacing: -0.5px; }
+        .logo-text span { font-size: 0.75rem; color: var(--text-muted); font-weight: 500; }
+        .nav-menu { list-style: none; }
+        .nav-item { margin-bottom: 0.5rem; }
+        .nav-link {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.875rem 1rem;
+            border-radius: 12px;
+            color: var(--text-muted);
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 0.9rem;
+            transition: all 0.2s;
+            cursor: pointer;
+            border: none;
+            background: none;
+            width: 100%;
+            font-family: inherit;
+        }
+        .nav-link:hover, .nav-link.active {
+            background: var(--surface-light);
+            color: var(--text);
+            transform: translateX(5px);
+        }
+        .nav-link.active {
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            color: white;
+            box-shadow: 0 10px 20px -5px rgba(99, 102, 241, 0.3);
+        }
+        .nav-link i { width: 20px; text-align: center; }
+        .sidebar-footer {
+            margin-top: 2rem;
+            padding-top: 1.5rem;
+            border-top: 1px solid var(--border);
+        }
+        .theme-toggle {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0.75rem 1rem;
+            background: var(--surface-light);
+            border-radius: 12px;
+            cursor: pointer;
+            border: none;
+            color: var(--text);
+            font-family: inherit;
+            width: 100%;
+            font-size: 0.9rem;
+        }
+        .main-content {
+            flex: 1;
+            margin-left: 280px;
+            padding: 2rem;
+            max-width: 1400px;
+        }
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+            padding: 1.5rem 2rem;
+            background: var(--glass);
+            backdrop-filter: blur(20px);
+            border-radius: 20px;
+            border: 1px solid var(--border);
+            box-shadow: var(--shadow);
+        }
+        .header-left h2 { font-size: 1.5rem; font-weight: 700; margin-bottom: 0.25rem; }
+        .header-left p { color: var(--text-muted); font-size: 0.9rem; }
+        .date-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem 1rem;
+            background: var(--surface-light);
+            border-radius: 50px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: var(--accent);
+        }
+        .mobile-menu-btn {
+            display: none;
+            position: fixed;
+            top: 1rem; left: 1rem;
+            z-index: 101;
+            width: 45px; height: 45px;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            color: var(--text);
+            font-size: 1.2rem;
+            cursor: pointer;
+            align-items: center;
+            justify-content: center;
+        }
+        .card-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+        .card {
+            background: var(--glass);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            padding: 1.5rem;
+            box-shadow: var(--shadow);
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+        .card:hover { transform: translateY(-5px); }
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+        .card-title { font-size: 1.1rem; font-weight: 700; }
+        .card-icon {
+            width: 40px; height: 40px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1rem;
+        }
+        .icon-blue { background: rgba(99, 102, 241, 0.2); color: var(--primary); }
+        .icon-pink { background: rgba(236, 72, 153, 0.2); color: var(--secondary); }
+        .icon-cyan { background: rgba(6, 182, 212, 0.2); color: var(--accent); }
+        .icon-green { background: rgba(16, 185, 129, 0.2); color: var(--success); }
+        .icon-orange { background: rgba(245, 158, 11, 0.2); color: var(--warning); }
+        .card-value { font-size: 2rem; font-weight: 800; margin: 0.5rem 0; }
+        .card-desc { color: var(--text-muted); font-size: 0.85rem; }
+        .section { display: none; animation: fadeIn 0.4s ease; }
+        .section.active { display: block; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        .section-title {
+            font-size: 1.75rem;
+            font-weight: 800;
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+        .section-title i { color: var(--primary); }
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.75rem 1.5rem;
+            border-radius: 12px;
+            border: none;
+            font-weight: 600;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-family: inherit;
+        }
+        .btn-primary { background: linear-gradient(135deg, var(--primary), var(--primary-dark)); color: white; box-shadow: 0 10px 20px -5px rgba(99, 102, 241, 0.3); }
+        .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 15px 25px -5px rgba(99, 102, 241, 0.4); }
+        .btn-secondary { background: var(--surface-light); color: var(--text); }
+        .btn-secondary:hover { background: var(--border); }
+        .btn-danger { background: var(--danger); color: white; }
+        .btn-success { background: var(--success); color: white; }
+        .btn-sm { padding: 0.5rem 1rem; font-size: 0.8rem; }
+        .form-group { margin-bottom: 1.25rem; }
+        .form-label { display: block; margin-bottom: 0.5rem; font-weight: 600; font-size: 0.9rem; }
+        .form-control {
+            width: 100%;
+            padding: 0.875rem 1rem;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            color: var(--text);
+            font-family: inherit;
+            font-size: 0.9rem;
+            transition: all 0.2s;
+        }
+        .form-control:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1); }
+        textarea.form-control { resize: vertical; min-height: 100px; }
+        select.form-control { cursor: pointer; }
+        .schedule-container { overflow-x: auto; }
+        .schedule-table {
+            width: 100%;
+            border-collapse: collapse;
+            background: var(--glass);
+            backdrop-filter: blur(20px);
+            border-radius: 20px;
+            overflow: hidden;
+            border: 1px solid var(--border);
+            box-shadow: var(--shadow);
+        }
+        .schedule-table th, .schedule-table td {
+            padding: 1rem;
+            text-align: center;
+            border: 1px solid var(--border);
+        }
+        .schedule-table th {
+            background: var(--surface-light);
+            font-weight: 700;
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        .schedule-table td { font-size: 0.85rem; }
+        .schedule-table .time-col { background: var(--surface-light); font-weight: 600; white-space: nowrap; }
+        .lesson-cell {
+            padding: 0.75rem;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 0.8rem;
+        }
+        .lesson-mat { background: rgba(99, 102, 241, 0.2); color: #818cf8; }
+        .lesson-tde { background: rgba(236, 72, 153, 0.2); color: #f472b6; }
+        .lesson-fiz { background: rgba(6, 182, 212, 0.2); color: #22d3ee; }
+        .lesson-byo { background: rgba(16, 185, 129, 0.2); color: #34d399; }
+        .lesson-tar { background: rgba(245, 158, 11, 0.2); color: #fbbf24; }
+        .lesson-kim { background: rgba(139, 92, 246, 0.2); color: #a78bfa; }
+        .lesson-cog { background: rgba(14, 165, 233, 0.2); color: #38bdf8; }
+        .lesson-din { background: rgba(99, 102, 241, 0.15); color: #818cf8; }
+        .lesson-bed { background: rgba(239, 68, 68, 0.2); color: #f87171; }
+        .lesson-byd { background: rgba(236, 72, 153, 0.15); color: #f472b6; }
+        .lesson-iyd { background: rgba(6, 182, 212, 0.15); color: #22d3ee; }
+        .lesson-res { background: rgba(245, 158, 11, 0.15); color: #fbbf24; }
+        .lesson-sne { background: rgba(16, 185, 129, 0.15); color: #34d399; }
+        .lesson-sag { background: rgba(99, 102, 241, 0.1); color: #818cf8; }
+        .lesson-tdb { background: rgba(139, 92, 246, 0.15); color: #a78bfa; }
+        .lesson-bil { background: rgba(6, 182, 212, 0.1); color: #22d3ee; }
+        .lesson-reh { background: rgba(16, 185, 129, 0.1); color: #34d399; }
+        .teacher-name { font-size: 0.7rem; opacity: 0.8; margin-top: 2px; display: block; }
+        .tomorrow-alert {
+            background: linear-gradient(135deg, rgba(99, 102, 241, 0.2), rgba(236, 72, 153, 0.2));
+            border: 1px solid var(--primary);
+            border-radius: 16px;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+            display: none;
+        }
+        .tomorrow-alert.show { display: block; animation: slideDown 0.4s ease; }
+        @keyframes slideDown { from { opacity: 0; transform: translateY(-20px); } to { opacity: 1; transform: translateY(0); } }
+        .tomorrow-alert h3 { margin-bottom: 1rem; font-size: 1.1rem; }
+        .tomorrow-lessons { display: flex; flex-wrap: wrap; gap: 0.75rem; }
+        .tomorrow-lesson-item {
+            background: var(--surface);
+            padding: 0.75rem 1rem;
+            border-radius: 12px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            border: 1px solid var(--border);
+        }
+        .item-list { display: flex; flex-direction: column; gap: 1rem; }
+        .list-item {
+            background: var(--glass);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 1.25rem;
+            box-shadow: var(--shadow);
+            transition: all 0.2s;
+        }
+        .list-item:hover { transform: translateX(5px); border-color: var(--primary); }
+        .item-header { display: flex; justify-content: space-between; align-items: start; margin-bottom: 0.75rem; }
+        .item-title { font-weight: 700; font-size: 1rem; margin-bottom: 0.25rem; }
+        .item-meta { display: flex; gap: 1rem; color: var(--text-muted); font-size: 0.8rem; margin-bottom: 0.75rem; flex-wrap: wrap; }
+        .item-meta span { display: flex; align-items: center; gap: 0.35rem; }
+        .item-content { color: var(--text-muted); font-size: 0.9rem; line-height: 1.6; }
+        .item-actions { display: flex; gap: 0.5rem; margin-top: 1rem; }
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.35rem;
+            padding: 0.35rem 0.75rem;
+            border-radius: 50px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+        .badge-primary { background: rgba(99, 102, 241, 0.2); color: var(--primary); }
+        .badge-secondary { background: rgba(236, 72, 153, 0.2); color: var(--secondary); }
+        .badge-success { background: rgba(16, 185, 129, 0.2); color: var(--success); }
+        .badge-warning { background: rgba(245, 158, 11, 0.2); color: var(--warning); }
+        .badge-danger { background: rgba(239, 68, 68, 0.2); color: var(--danger); }
+        .chat-container {
+            background: var(--glass);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            height: 500px;
+            display: flex;
+            flex-direction: column;
+            box-shadow: var(--shadow);
+            overflow: hidden;
+        }
+        .chat-messages {
+            flex: 1;
+            overflow-y: auto;
+            padding: 1.5rem;
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+        .chat-message {
+            max-width: 80%;
+            padding: 1rem 1.25rem;
+            border-radius: 16px;
+            font-size: 0.9rem;
+            line-height: 1.5;
+            animation: messageIn 0.3s ease;
+        }
+        @keyframes messageIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        .chat-message.user {
+            align-self: flex-end;
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            color: white;
+            border-bottom-right-radius: 4px;
+        }
+        .chat-message.bot {
+            align-self: flex-start;
+            background: var(--surface-light);
+            border: 1px solid var(--border);
+            border-bottom-left-radius: 4px;
+        }
+        .chat-input-area {
+            padding: 1rem 1.5rem;
+            border-top: 1px solid var(--border);
+            display: flex;
+            gap: 0.75rem;
+            background: var(--surface);
+        }
+        .chat-input-area input { flex: 1; }
+        .poll-options { display: flex; flex-direction: column; gap: 0.75rem; margin: 1rem 0; }
+        .poll-option {
+            position: relative;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 1rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            overflow: hidden;
+        }
+        .poll-option:hover { border-color: var(--primary); }
+        .poll-bar {
+            position: absolute;
+            top: 0; left: 0; height: 100%;
+            background: rgba(99, 102, 241, 0.2);
+            transition: width 0.5s ease;
+            z-index: 0;
+        }
+        .poll-option-content { position: relative; z-index: 1; display: flex; justify-content: space-between; font-weight: 600; font-size: 0.9rem; }
+        .poll-votes { color: var(--text-muted); font-size: 0.8rem; }
+        .archive-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 1.5rem;
+        }
+        .folder-card {
+            background: var(--glass);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 1.5rem;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: var(--shadow);
+        }
+        .folder-card:hover { transform: translateY(-5px); border-color: var(--primary); }
+        .folder-icon { font-size: 3rem; color: var(--warning); margin-bottom: 1rem; }
+        .folder-name { font-weight: 700; margin-bottom: 0.5rem; }
+        .folder-count { color: var(--text-muted); font-size: 0.85rem; }
+        .file-list { margin-top: 1rem; }
+        .file-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0.875rem 1rem;
+            background: var(--surface);
+            border-radius: 10px;
+            margin-bottom: 0.5rem;
+            border: 1px solid var(--border);
+        }
+        .file-info { display: flex; align-items: center; gap: 0.75rem; }
+        .file-icon { color: var(--primary); font-size: 1.1rem; }
+        .gallery-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 1.5rem;
+        }
+        .gallery-item {
+            background: var(--glass);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: var(--shadow);
+            transition: transform 0.3s;
+        }
+        .gallery-item:hover { transform: scale(1.02); }
+        .gallery-img {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+            background: var(--surface-light);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-muted);
+        }
+        .gallery-content { padding: 1rem; }
+        .gallery-date { font-size: 0.8rem; color: var(--text-muted); margin-bottom: 0.5rem; }
+        .gallery-desc { font-size: 0.9rem; font-weight: 600; }
+        .qa-thread { margin-bottom: 1.5rem; }
+        .qa-question {
+            background: var(--glass);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 1.25rem;
+            margin-bottom: 0.75rem;
+            box-shadow: var(--shadow);
+        }
+        .qa-answers { margin-left: 2rem; }
+        .qa-answer {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 1rem;
+            margin-bottom: 0.5rem;
+        }
+        .qa-author { font-weight: 700; font-size: 0.85rem; margin-bottom: 0.5rem; color: var(--primary); }
+        .qa-text { font-size: 0.9rem; color: var(--text-muted); line-height: 1.5; }
+        .quick-actions {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+        }
+        .modal-overlay {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.7);
+            backdrop-filter: blur(5px);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            padding: 1rem;
+        }
+        .modal-overlay.show { display: flex; animation: fadeIn 0.2s; }
+        .modal {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 24px;
+            padding: 2rem;
+            max-width: 600px;
+            width: 100%;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: var(--shadow);
+        }
+        .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; }
+        .modal-title { font-size: 1.25rem; font-weight: 700; }
+        .modal-close {
+            width: 36px; height: 36px;
+            border-radius: 10px;
+            border: 1px solid var(--border);
+            background: var(--surface-light);
+            color: var(--text);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .teacher-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+            gap: 1rem;
+            margin-top: 1.5rem;
+        }
+        .teacher-card {
+            background: var(--glass);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 1.25rem;
+            text-align: center;
+            box-shadow: var(--shadow);
+            transition: all 0.3s;
+        }
+        .teacher-card:hover { transform: translateY(-3px); border-color: var(--primary); }
+        .teacher-avatar {
+            width: 60px; height: 60px;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 1rem;
+            font-size: 1.5rem;
+            color: white;
+            font-weight: 700;
+        }
+        .teacher-name-card { font-weight: 700; margin-bottom: 0.25rem; }
+        .teacher-lesson { color: var(--text-muted); font-size: 0.85rem; }
+        .teacher-hours { margin-top: 0.75rem; font-size: 0.75rem; color: var(--accent); font-weight: 600; }
+        .empty-state {
+            text-align: center;
+            padding: 3rem;
+            color: var(--text-muted);
+        }
+        .empty-state i { font-size: 3rem; margin-bottom: 1rem; opacity: 0.5; }
+        .empty-state h3 { margin-bottom: 0.5rem; color: var(--text); }
+        .loading-spinner {
+            display: inline-block;
+            width: 20px; height: 20px;
+            border: 3px solid rgba(255,255,255,0.3);
+            border-radius: 50%;
+            border-top-color: var(--primary);
+            animation: spin 1s ease-in-out infinite;
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
+        .sync-status {
+            position: fixed;
+            bottom: 1rem;
+            right: 1rem;
+            padding: 0.75rem 1rem;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            font-size: 0.8rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            z-index: 1000;
+            box-shadow: var(--shadow);
+        }
+        .sync-status.online { color: var(--success); }
+        .sync-status.offline { color: var(--warning); }
+
+        @media (max-width: 1024px) {
+            .sidebar { transform: translateX(-100%); }
+            .sidebar.open { transform: translateX(0); }
+            .main-content { margin-left: 0; }
+            .mobile-menu-btn { display: flex; }
+            .overlay {
+                position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+                background: rgba(0,0,0,0.5); z-index: 99; display: none;
+            }
+            .overlay.show { display: block; }
+        }
+        @media (max-width: 768px) {
+            .card-grid { grid-template-columns: 1fr; }
+            .header { flex-direction: column; gap: 1rem; text-align: center; }
+            .quick-actions { justify-content: center; }
+            .archive-grid, .gallery-grid { grid-template-columns: 1fr; }
+        }
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: var(--bg); }
+        ::-webkit-scrollbar-thumb { background: var(--surface-light); border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: var(--border); }
+    </style>
+</head>
+<body>
+    <div class="bg-animation"></div>
+    <button class="mobile-menu-btn" onclick="toggleSidebar()"><i class="fas fa-bars"></i></button>
+    <div class="overlay" onclick="toggleSidebar()"></div>
+
+    <div class="app-container">
+        <aside class="sidebar" id="sidebar">
+            <div class="logo">
+                <div class="logo-icon"><i class="fas fa-graduation-cap"></i></div>
+                <div class="logo-text">
+                    <h1>9-D Portal</h1>
+                    <span>Süleyman Demirel FL</span>
+                </div>
+            </div>
+            <ul class="nav-menu">
+                <li class="nav-item"><button class="nav-link active" onclick="showSection('dashboard', this)"><i class="fas fa-home"></i> Ana Sayfa</button></li>
+                <li class="nav-item"><button class="nav-link" onclick="showSection('schedule', this)"><i class="fas fa-calendar-alt"></i> Ders Programı</button></li>
+                <li class="nav-item"><button class="nav-link" onclick="showSection('homework', this)"><i class="fas fa-tasks"></i> Ödev & Sınav</button></li>
+                <li class="nav-item"><button class="nav-link" onclick="showSection('notes', this)"><i class="fas fa-book"></i> Ders Notları</button></li>
+                <li class="nav-item"><button class="nav-link" onclick="showSection('archive', this)"><i class="fas fa-folder-open"></i> Arşiv</button></li>
+                <li class="nav-item"><button class="nav-link" onclick="showSection('qa', this)"><i class="fas fa-question-circle"></i> Soru-Cevap</button></li>
+                <li class="nav-item"><button class="nav-link" onclick="showSection('announcements', this)"><i class="fas fa-bullhorn"></i> Duyurular</button></li>
+                <li class="nav-item"><button class="nav-link" onclick="showSection('polls', this)"><i class="fas fa-poll"></i> Anketler</button></li>
+                <li class="nav-item"><button class="nav-link" onclick="showSection('memories', this)"><i class="fas fa-camera"></i> Anılar</button></li>
+                <li class="nav-item"><button class="nav-link" onclick="showSection('chatbot', this)"><i class="fas fa-robot"></i> Chatbot</button></li>
+                <li class="nav-item"><button class="nav-link" onclick="showSection('teachers', this)"><i class="fas fa-chalkboard-teacher"></i> Öğretmenler</button></li>
+            </ul>
+            <div class="sidebar-footer">
+                <button class="theme-toggle" onclick="toggleTheme()">
+                    <span><i class="fas fa-moon"></i> Tema Değiştir</span>
+                    <i class="fas fa-exchange-alt"></i>
+                </button>
+            </div>
+        </aside>
+
+        <main class="main-content">
+            <div class="header">
+                <div class="header-left">
+                    <h2 id="page-title">Hoş Geldin, 9-D! 👋</h2>
+                    <p>Süleyman Demirel Fen Lisesi - Sınıf Öğretmeni: Ahmet Güngör</p>
+                </div>
+                <div class="date-badge"><i class="fas fa-calendar"></i><span id="current-date"></span></div>
+            </div>
+
+            <!-- Dashboard -->
+            <section id="dashboard" class="section active">
+                <div class="quick-actions">
+                    <button class="btn btn-primary" onclick="showTomorrow()"><i class="fas fa-sun"></i> Yarın Ne Var?</button>
+                    <button class="btn btn-secondary" onclick="openModal('homeworkModal'); showSection('homework', document.querySelectorAll('.nav-link')[2])"><i class="fas fa-plus"></i> Yeni Ödev Ekle</button>
+                    <button class="btn btn-secondary" onclick="openModal('announcementModal'); showSection('announcements', document.querySelectorAll('.nav-link')[6])"><i class="fas fa-plus"></i> Duyuru Yap</button>
+                </div>
+                <div class="tomorrow-alert" id="tomorrowAlert">
+                    <h3><i class="fas fa-calendar-day"></i> Yarınki Dersleriniz</h3>
+                    <div class="tomorrow-lessons" id="tomorrowLessons"></div>
+                </div>
+                <div class="card-grid">
+                    <div class="card">
+                        <div class="card-header">
+                            <div><div class="card-title">Bugünkü Ders</div><div class="card-value" id="todayLessonCount">0</div><div class="card-desc">ders var</div></div>
+                            <div class="card-icon icon-blue"><i class="fas fa-book-open"></i></div>
+                        </div>
+                    </div>
+                    <div class="card">
+                        <div class="card-header">
+                            <div><div class="card-title">Bekleyen Ödev</div><div class="card-value" id="pendingHomework">0</div><div class="card-desc">tamamlanmadı</div></div>
+                            <div class="card-icon icon-pink"><i class="fas fa-clipboard-list"></i></div>
+                        </div>
+                    </div>
+                    <div class="card">
+                        <div class="card-header">
+                            <div><div class="card-title">Yeni Duyuru</div><div class="card-value" id="newAnnouncements">0</div><div class="card-desc">bu hafta</div></div>
+                            <div class="card-icon icon-cyan"><i class="fas fa-bullhorn"></i></div>
+                        </div>
+                    </div>
+                    <div class="card">
+                        <div class="card-header">
+                            <div><div class="card-title">Aktif Anket</div><div class="card-value" id="activePolls">0</div><div class="card-desc">oylamaya açık</div></div>
+                            <div class="card-icon icon-orange"><i class="fas fa-poll"></i></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="card" style="margin-bottom: 1.5rem;">
+                    <div class="card-header">
+                        <div class="card-title"><i class="fas fa-clock"></i> Bugünkü Ders Programı</div>
+                        <span class="badge badge-primary" id="todayName"></span>
+                    </div>
+                    <div id="todaySchedule" class="item-list"></div>
+                </div>
+                <div class="card-grid">
+                    <div class="card">
+                        <div class="card-title" style="margin-bottom: 1rem;"><i class="fas fa-fire"></i> Son Duyurular</div>
+                        <div id="recentAnnouncements"></div>
+                    </div>
+                    <div class="card">
+                        <div class="card-title" style="margin-bottom: 1rem;"><i class="fas fa-question-circle"></i> Son Sorular</div>
+                        <div id="recentQuestions"></div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Schedule -->
+            <section id="schedule" class="section">
+                <div class="section-title"><i class="fas fa-calendar-alt"></i> Haftalık Ders Programı</div>
+                <div class="schedule-container">
+                    <table class="schedule-table">
+                        <thead><tr><th>Saat</th><th>Pazartesi</th><th>Salı</th><th>Çarşamba</th><th>Perşembe</th><th>Cuma</th></tr></thead>
+                        <tbody id="scheduleBody"></tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- Homework -->
+            <section id="homework" class="section">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+                    <div class="section-title" style="margin:0"><i class="fas fa-tasks"></i> Ödev & Sınav Takvimi</div>
+                    <button class="btn btn-primary" onclick="openModal('homeworkModal')"><i class="fas fa-plus"></i> Yeni Ekle</button>
+                </div>
+                <div class="item-list" id="homeworkList"><div class="loading-spinner"></div> Yükleniyor...</div>
+            </section>
+
+            <!-- Notes -->
+            <section id="notes" class="section">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+                    <div class="section-title" style="margin:0"><i class="fas fa-book"></i> Ders Notları</div>
+                    <button class="btn btn-primary" onclick="openModal('noteModal')"><i class="fas fa-plus"></i> Not Paylaş</button>
+                </div>
+                <div class="item-list" id="notesList"><div class="loading-spinner"></div> Yükleniyor...</div>
+            </section>
+
+            <!-- Archive -->
+            <section id="archive" class="section">
+                <div class="section-title"><i class="fas fa-folder-open"></i> Ders Arşivi</div>
+                <p style="color: var(--text-muted); margin-bottom: 1.5rem;">Derslere göre düzenlenmiş klasörler. İçine tıklayarak dosyaları görüntüleyebilirsiniz.</p>
+                <div class="archive-grid" id="archiveGrid"></div>
+                <div id="archiveFiles" style="display:none; margin-top: 2rem;">
+                    <button class="btn btn-secondary btn-sm" onclick="backToArchive()" style="margin-bottom: 1rem;"><i class="fas fa-arrow-left"></i> Geri</button>
+                    <div class="card">
+                        <div class="card-title" id="archiveFolderTitle"></div>
+                        <div class="file-list" id="archiveFileList"></div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Q&A -->
+            <section id="qa" class="section">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+                    <div class="section-title" style="margin:0"><i class="fas fa-question-circle"></i> Soru & Cevap</div>
+                    <button class="btn btn-primary" onclick="openModal('questionModal')"><i class="fas fa-plus"></i> Soru Sor</button>
+                </div>
+                <div id="qaList"><div class="loading-spinner"></div> Yükleniyor...</div>
+            </section>
+
+            <!-- Announcements -->
+            <section id="announcements" class="section">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+                    <div class="section-title" style="margin:0"><i class="fas fa-bullhorn"></i> Duyuru Paneli</div>
+                    <button class="btn btn-primary" onclick="openModal('announcementModal')"><i class="fas fa-plus"></i> Duyuru Ekle</button>
+                </div>
+                <div class="item-list" id="announcementList"><div class="loading-spinner"></div> Yükleniyor...</div>
+            </section>
+
+            <!-- Polls -->
+            <section id="polls" class="section">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+                    <div class="section-title" style="margin:0"><i class="fas fa-poll"></i> Sınıf Anketleri</div>
+                    <button class="btn btn-primary" onclick="openModal('pollModal')"><i class="fas fa-plus"></i> Anket Oluştur</button>
+                </div>
+                <div class="item-list" id="pollList"><div class="loading-spinner"></div> Yükleniyor...</div>
+            </section>
+
+            <!-- Memories -->
+            <section id="memories" class="section">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+                    <div class="section-title" style="margin:0"><i class="fas fa-camera"></i> Sınıf Anıları</div>
+                    <button class="btn btn-primary" onclick="openModal('memoryModal')"><i class="fas fa-plus"></i> Anı Ekle</button>
+                </div>
+                <div class="gallery-grid" id="memoryGallery"><div class="loading-spinner"></div> Yükleniyor...</div>
+            </section>
+
+            <!-- Chatbot -->
+            <section id="chatbot" class="section">
+                <div class="section-title"><i class="fas fa-robot"></i> Sınıf Asistanı</div>
+                <p style="color: var(--text-muted); margin-bottom: 1.5rem;">"Mat sınavı ne zaman?", "Yarın hangi dersler var?", "Fizik öğretmeni kim?" gibi sorular sorabilirsiniz.</p>
+                <div class="chat-container">
+                    <div class="chat-messages" id="chatMessages">
+                        <div class="chat-message bot"><strong>Merhaba! 👋</strong><br>Ben 9-D sınıf asistanıyım. Bana ders programı, ödevler, sınavlar veya öğretmenler hakkında soru sorabilirsiniz.</div>
+                    </div>
+                    <div class="chat-input-area">
+                        <input type="text" class="form-control" id="chatInput" placeholder="Bir soru yazın..." onkeypress="if(event.key==='Enter') sendChat()">
+                        <button class="btn btn-primary" onclick="sendChat()"><i class="fas fa-paper-plane"></i></button>
+                    </div>
+                </div>
+                <div style="margin-top: 1.5rem;">
+                    <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 0.75rem;"><strong>Örnek Sorular:</strong></p>
+                    <div style="display: flex; flex-wrap: wrap; gap: 0.5rem;">
+                        <button class="btn btn-secondary btn-sm" onclick="quickChat('Yarın hangi dersler var?')">Yarın hangi dersler var?</button>
+                        <button class="btn btn-secondary btn-sm" onclick="quickChat('Matematik sınavı ne zaman?')">Matematik sınavı ne zaman?</button>
+                        <button class="btn btn-secondary btn-sm" onclick="quickChat('Fizik öğretmeni kim?')">Fizik öğretmeni kim?</button>
+                        <button class="btn btn-secondary btn-sm" onclick="quickChat('Bu hafta ödev var mı?')">Bu hafta ödev var mı?</button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Teachers -->
+            <section id="teachers" class="section">
+                <div class="section-title"><i class="fas fa-chalkboard-teacher"></i> Öğretmenlerimiz</div>
+                <div class="teacher-grid" id="teacherGrid"></div>
+            </section>
+        </main>
+    </div>
+
+    <!-- Sync Status Indicator -->
+    <div class="sync-status online" id="syncStatus"><i class="fas fa-wifi"></i> <span>Canlı bağlantı</span></div>
+
+    <!-- Modals -->
+    <div class="modal-overlay" id="homeworkModal">
+        <div class="modal">
+            <div class="modal-header"><div class="modal-title">Yeni Ödev / Sınav Ekle</div><button class="modal-close" onclick="closeModal('homeworkModal')"><i class="fas fa-times"></i></button></div>
+            <form onsubmit="saveHomework(event)">
+                <div class="form-group"><label class="form-label">Başlık</label><input type="text" class="form-control" id="hwTitle" required placeholder="Örn: Matematik 2. Yazılı"></div>
+                <div class="form-group"><label class="form-label">Ders</label><select class="form-control" id="hwLesson" required></select></div>
+                <div class="form-group"><label class="form-label">Tür</label><select class="form-control" id="hwType"><option value="Ödev">Ödev</option><option value="Sınav">Sınav</option><option value="Proje">Proje</option><option value="Diğer">Diğer</option></select></div>
+                <div class="form-group"><label class="form-label">Teslim / Sınav Tarihi</label><input type="date" class="form-control" id="hwDate" required></div>
+                <div class="form-group"><label class="form-label">Açıklama</label><textarea class="form-control" id="hwDesc" placeholder="Detayları buraya yaz..."></textarea></div>
+                <button type="submit" class="btn btn-primary" style="width:100%"><i class="fas fa-save"></i> Kaydet</button>
+            </form>
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="announcementModal">
+        <div class="modal">
+            <div class="modal-header"><div class="modal-title">Yeni Duyuru</div><button class="modal-close" onclick="closeModal('announcementModal')"><i class="fas fa-times"></i></button></div>
+            <form onsubmit="saveAnnouncement(event)">
+                <div class="form-group"><label class="form-label">Başlık</label><input type="text" class="form-control" id="annTitle" required></div>
+                <div class="form-group"><label class="form-label">İçerik</label><textarea class="form-control" id="annContent" required></textarea></div>
+                <div class="form-group"><label class="form-label">Yazar</label><input type="text" class="form-control" id="annAuthor" placeholder="İsminiz" required></div>
+                <button type="submit" class="btn btn-primary" style="width:100%"><i class="fas fa-paper-plane"></i> Yayınla</button>
+            </form>
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="noteModal">
+        <div class="modal">
+            <div class="modal-header"><div class="modal-title">Ders Notu Paylaş</div><button class="modal-close" onclick="closeModal('noteModal')"><i class="fas fa-times"></i></button></div>
+            <form onsubmit="saveNote(event)">
+                <div class="form-group"><label class="form-label">Başlık</label><input type="text" class="form-control" id="noteTitle" required placeholder="Örn: Matematik 2. Yazılı Notları"></div>
+                <div class="form-group"><label class="form-label">Ders</label><select class="form-control" id="noteLesson" required></select></div>
+                <div class="form-group"><label class="form-label">Açıklama</label><textarea class="form-control" id="noteDesc" placeholder="Not hakkında kısa bilgi..."></textarea></div>
+                <div class="form-group"><label class="form-label">Dosya (PDF/Foto)</label><input type="file" class="form-control" id="noteFile" accept=".pdf,.jpg,.jpeg,.png"><small style="color: var(--text-muted); display: block; margin-top: 0.5rem;">⚠️ Maksimum 500KB. Büyük dosyalar için Drive linki paylaşın.</small></div>
+                <button type="submit" class="btn btn-primary" style="width:100%"><i class="fas fa-upload"></i> Paylaş</button>
+            </form>
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="questionModal">
+        <div class="modal">
+            <div class="modal-header"><div class="modal-title">Soru Sor</div><button class="modal-close" onclick="closeModal('questionModal')"><i class="fas fa-times"></i></button></div>
+            <form onsubmit="saveQuestion(event)">
+                <div class="form-group"><label class="form-label">Başlık</label><input type="text" class="form-control" id="qTitle" required placeholder="Örn: Bu soruyu çözebilen var mı?"></div>
+                <div class="form-group"><label class="form-label">Ders</label><select class="form-control" id="qLesson" required></select></div>
+                <div class="form-group"><label class="form-label">Soru Detayı</label><textarea class="form-control" id="qContent" required placeholder="Soruyu detaylıca açıklayın..."></textarea></div>
+                <div class="form-group"><label class="form-label">Adınız</label><input type="text" class="form-control" id="qAuthor" required></div>
+                <button type="submit" class="btn btn-primary" style="width:100%"><i class="fas fa-paper-plane"></i> Soruyu Gönder</button>
+            </form>
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="pollModal">
+        <div class="modal">
+            <div class="modal-header"><div class="modal-title">Yeni Anket</div><button class="modal-close" onclick="closeModal('pollModal')"><i class="fas fa-times"></i></button></div>
+            <form onsubmit="savePoll(event)">
+                <div class="form-group"><label class="form-label">Soru</label><input type="text" class="form-control" id="pollQuestion" required placeholder="Örn: Gezi nereye olsun?"></div>
+                <div class="form-group"><label class="form-label">Seçenekler (her satıra bir seçenek)</label><textarea class="form-control" id="pollOptions" rows="4" required placeholder="İstanbul&#10;Ankara&#10;İzmir"></textarea></div>
+                <button type="submit" class="btn btn-primary" style="width:100%"><i class="fas fa-vote-yea"></i> Anket Oluştur</button>
+            </form>
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="memoryModal">
+        <div class="modal">
+            <div class="modal-header"><div class="modal-title">Anı Ekle</div><button class="modal-close" onclick="closeModal('memoryModal')"><i class="fas fa-times"></i></button></div>
+            <form onsubmit="saveMemory(event)">
+                <div class="form-group"><label class="form-label">Açıklama</label><input type="text" class="form-control" id="memDesc" required placeholder="Örn: Sınıf gezisi hatırası"></div>
+                <div class="form-group"><label class="form-label">Fotoğraf</label><input type="file" class="form-control" id="memFile" accept="image/*" required></div>
+                <button type="submit" class="btn btn-primary" style="width:100%"><i class="fas fa-camera"></i> Ekle</button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // ===================== FIREBASE CONFIG - BURAYI DOLDUR =====================
+        // Adım 1: firebase.google.com'dan ücretsiz proje oluştur
+        // Adım 2: Realtime Database oluştur (test modunda başlat)
+        // Adım 3: Proje ayarlarından config bilgilerini kopyala
+        const firebaseConfig = {
+            apiKey: "SENIN_API_KEY",
+            authDomain: "SENIN_PROJE.firebaseapp.com",
+            databaseURL: "https://SENIN_PROJE-default-rtdb.firebaseio.com",
+            projectId: "SENIN_PROJE",
+            storageBucket: "SENIN_PROJE.appspot.com",
+            messagingSenderId: "SENIN_SENDER_ID",
+            appId: "SENIN_APP_ID"
+        };
+
+        // Initialize Firebase
+        const app = firebase.initializeApp(firebaseConfig);
+        const db = firebase.database();
+
+        // ===================== DATA =====================
+        const scheduleData = {
+            "Pazartesi": [
+                {time: "08:20 - 09:00", lesson: "MAT", teacher: "Ahmet Güngör"},
+                {time: "09:10 - 09:50", lesson: "MAT", teacher: "Ahmet Güngör"},
+                {time: "10:00 - 10:40", lesson: "SAĞ", teacher: "Veysel Efe"},
+                {time: "10:50 - 11:30", lesson: "FİZ1", teacher: "Gökay Açıkgöz"},
+                {time: "11:40 - 12:20", lesson: "FİZ1", teacher: "Gökay Açıkgöz"},
+                {time: "13:30 - 14:10", lesson: "REHB", teacher: "Ahmet Güngör"},
+                {time: "14:20 - 15:00", lesson: "TDB", teacher: "Mehmet Yavuz"},
+                {time: "15:10 - 15:50", lesson: "TDE", teacher: "Zehra Eriş"},
+            ],
+            "Salı": [
+                {time: "08:20 - 09:00", lesson: "MAT", teacher: "Ahmet Güngör"},
+                {time: "09:10 - 09:50", lesson: "MAT", teacher: "Ahmet Güngör"},
+                {time: "10:00 - 10:40", lesson: "RESMÜ", teacher: "Hazal Aydın Bayburi / Dilek Tutar"},
+                {time: "10:50 - 11:30", lesson: "RESMÜ", teacher: "Hazal Aydın Bayburi / Dilek Tutar"},
+                {time: "11:40 - 12:20", lesson: "BİYO1", teacher: "Gülsen Albayrak"},
+                {time: "13:30 - 14:10", lesson: "BİYO1", teacher: "Gülsen Albayrak"},
+                {time: "14:20 - 15:00", lesson: "İYDAL", teacher: "Hatice Özek"},
+                {time: "15:10 - 15:50", lesson: "İYDAL", teacher: "Hatice Özek"},
+            ],
+            "Çarşamba": [
+                {time: "08:20 - 09:00", lesson: "BYDİ", teacher: "Ayşegül Polat"},
+                {time: "09:10 - 09:50", lesson: "BYDİ", teacher: "Ayşegül Polat"},
+                {time: "10:00 - 10:40", lesson: "TDE", teacher: "Zehra Eriş"},
+                {time: "10:50 - 11:30", lesson: "TDE", teacher: "Zehra Eriş"},
+                {time: "11:40 - 12:20", lesson: "BİLT", teacher: "Kenan Yılmaz"},
+                {time: "13:30 - 14:10", lesson: "BİLT", teacher: "Kenan Yılmaz"},
+                {time: "14:20 - 15:00", lesson: "DİN", teacher: "Serdar Uçar"},
+                {time: "15:10 - 15:50", lesson: "DİN", teacher: "Serdar Uçar"},
+            ],
+            "Perşembe": [
+                {time: "08:20 - 09:00", lesson: "BED", teacher: "Muhittin Uysal"},
+                {time: "09:10 - 09:50", lesson: "BED", teacher: "Muhittin Uysal"},
+                {time: "10:00 - 10:40", lesson: "SNE9", teacher: "Hayriye Uymazsoy"},
+                {time: "10:50 - 11:30", lesson: "SNE9", teacher: "Hayriye Uymazsoy"},
+                {time: "11:40 - 12:20", lesson: "MAT", teacher: "Ahmet Güngör"},
+                {time: "13:30 - 14:10", lesson: "MAT", teacher: "Ahmet Güngör"},
+                {time: "14:20 - 15:00", lesson: "COĞ", teacher: "Hayriye Uymazsoy"},
+                {time: "15:10 - 15:50", lesson: "COĞ", teacher: "Hayriye Uymazsoy"},
+            ],
+            "Cuma": [
+                {time: "08:20 - 09:00", lesson: "TDE", teacher: "Zehra Eriş"},
+                {time: "09:10 - 09:50", lesson: "TDE", teacher: "Zehra Eriş"},
+                {time: "10:00 - 10:40", lesson: "KİM1", teacher: "Nazlıcan Erdoğan"},
+                {time: "10:50 - 11:30", lesson: "KİM1", teacher: "Nazlıcan Erdoğan"},
+                {time: "11:40 - 12:20", lesson: "TAR", teacher: "Ahmet Gönülseven"},
+                {time: "13:30 - 14:10", lesson: "TAR", teacher: "Ahmet Gönülseven"},
+                {time: "14:20 - 15:00", lesson: "BYDİ", teacher: "Ayşegül Polat"},
+                {time: "15:10 - 15:50", lesson: "BYDİ", teacher: "Ayşegül Polat"},
+            ]
+        };
+
+        const lessonsInfo = {
+            "BED": {name: "Beden Eğitimi", hours: 2, teacher: "Muhittin Uysal"},
+            "BYDİ": {name: "Birinci Yabancı Dil (İngilizce)", hours: 4, teacher: "Ayşegül Polat"},
+            "BİLT": {name: "Bilişim Teknolojileri ve Yazılım", hours: 2, teacher: "Kenan Yılmaz"},
+            "BİYO1": {name: "Biyoloji 1", hours: 2, teacher: "Gülsen Albayrak"},
+            "COĞ": {name: "Coğrafya", hours: 2, teacher: "Hayriye Uymazsoy"},
+            "DİN": {name: "Din Kültürü ve Ahlak Bilgisi", hours: 2, teacher: "Serdar Uçar"},
+            "FİZ1": {name: "Fizik 1", hours: 2, teacher: "Gökay Açıkgöz"},
+            "KİM1": {name: "Kimya 1", hours: 2, teacher: "Nazlıcan Erdoğan"},
+            "MAT": {name: "Matematik", hours: 6, teacher: "Ahmet Güngör"},
+            "REHB": {name: "Rehberlik", hours: 1, teacher: "Ahmet Güngör"},
+            "RESMÜ": {name: "Resim/Müzik", hours: 2, teacher: "Hazal Aydın Bayburi / Dilek Tutar"},
+            "SAĞ": {name: "Sağlık Bilgisi ve Trafik Kültürü", hours: 1, teacher: "Veysel Efe"},
+            "SNE9": {name: "Sanat Eğitimi", hours: 2, teacher: "Hayriye Uymazsoy"},
+            "TAR": {name: "Tarih", hours: 2, teacher: "Ahmet Gönülseven"},
+            "TDB": {name: "Temel Dini Bilgiler", hours: 1, teacher: "Mehmet Yavuz"},
+            "TDE": {name: "Türk Dili ve Edebiyatı", hours: 5, teacher: "Zehra Eriş"},
+            "İYDAL": {name: "İkinci Yabancı Dil (Almanca)", hours: 2, teacher: "Hatice Özek"}
+        };
+
+        const lessonColors = {
+            "MAT": "lesson-mat", "TDE": "lesson-tde", "FİZ1": "lesson-fiz", "BİYO1": "lesson-byo",
+            "TAR": "lesson-tar", "KİM1": "lesson-kim", "COĞ": "lesson-cog", "DİN": "lesson-din",
+            "BED": "lesson-bed", "BYDİ": "lesson-byd", "İYDAL": "lesson-iyd", "RESMÜ": "lesson-res",
+            "SNE9": "lesson-sne", "SAĞ": "lesson-sag", "TDB": "lesson-tdb", "BİLT": "lesson-bil", "REHB": "lesson-reh"
+        };
+
+        const days = ["Pazar", "Pazartesi", "Salı", "Çarşamba", "Perşembe", "Cuma", "Cumartesi"];
+
+        // ===================== INIT =====================
+        function init() {
+            document.getElementById('current-date').textContent = new Date().toLocaleDateString('tr-TR', {weekday: 'long', year: 'numeric', month: 'long', day: 'numeric'});
+            populateLessonSelects();
+            renderScheduleTable();
+            renderTeachers();
+            setupRealtimeListeners();
+            updateTodaySchedule();
+        }
+
+        function populateLessonSelects() {
+            const selects = ['hwLesson', 'noteLesson', 'qLesson'];
+            selects.forEach(id => {
+                const sel = document.getElementById(id);
+                sel.innerHTML = '<option value="">Seçiniz</option>';
+                Object.entries(lessonsInfo).forEach(([code, info]) => {
+                    sel.innerHTML += `<option value="${code}">${code} - ${info.name}</option>`;
+                });
+            });
+        }
+
+        // ===================== REALTIME LISTENERS =====================
+        function setupRealtimeListeners() {
+            // Homework
+            db.ref('class9d/homework').on('value', (snap) => {
+                const data = snap.val() || {};
+                const list = Object.entries(data).map(([id, val]) => ({id, ...val}));
+                renderHomework(list);
+                updateDashboardCounts();
+            });
+
+            // Announcements
+            db.ref('class9d/announcements').on('value', (snap) => {
+                const data = snap.val() || {};
+                const list = Object.entries(data).map(([id, val]) => ({id, ...val}));
+                renderAnnouncements(list);
+                updateDashboardCounts();
+            });
+
+            // Notes
+            db.ref('class9d/notes').on('value', (snap) => {
+                const data = snap.val() || {};
+                const list = Object.entries(data).map(([id, val]) => ({id, ...val}));
+                renderNotes(list);
+                renderArchive(list);
+            });
+
+            // Questions
+            db.ref('class9d/questions').on('value', (snap) => {
+                const data = snap.val() || {};
+                const list = Object.entries(data).map(([id, val]) => ({id, ...val}));
+                renderQA(list);
+                updateDashboardCounts();
+            });
+
+            // Polls
+            db.ref('class9d/polls').on('value', (snap) => {
+                const data = snap.val() || {};
+                const list = Object.entries(data).map(([id, val]) => ({id, ...val}));
+                renderPolls(list);
+                updateDashboardCounts();
+            });
+
+            // Memories
+            db.ref('class9d/memories').on('value', (snap) => {
+                const data = snap.val() || {};
+                const list = Object.entries(data).map(([id, val]) => ({id, ...val}));
+                renderMemories(list);
+            });
+
+            // Connection status
+            db.ref('.info/connected').on('value', (snap) => {
+                const status = document.getElementById('syncStatus');
+                if(snap.val() === true) {
+                    status.className = 'sync-status online';
+                    status.innerHTML = '<i class="fas fa-wifi"></i> <span>Canlı bağlantı</span>';
+                } else {
+                    status.className = 'sync-status offline';
+                    status.innerHTML = '<i class="fas fa-exclamation-triangle"></i> <span>Bağlantı yok</span>';
+                }
+            });
+        }
+
+        // ===================== NAVIGATION =====================
+        function showSection(id, btn) {
+            document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+            document.getElementById(id).classList.add('active');
+            if(btn) {
+                document.querySelectorAll('.nav-link').forEach(n => n.classList.remove('active'));
+                btn.classList.add('active');
+            }
+            const titles = {
+                dashboard: 'Hoş Geldin, 9-D! 👋',
+                schedule: 'Haftalık Ders Programı 📅',
+                homework: 'Ödev & Sınav Takvimi 📝',
+                notes: 'Ders Notları 📚',
+                archive: 'Ders Arşivi 📁',
+                qa: 'Soru & Cevap 💡',
+                announcements: 'Duyuru Paneli 📢',
+                polls: 'Sınıf Anketleri 🗳️',
+                memories: 'Sınıf Anıları 📸',
+                chatbot: 'Sınıf Asistanı 🤖',
+                teachers: 'Öğretmenlerimiz 👨‍🏫'
+            };
+            document.getElementById('page-title').textContent = titles[id] || '9-D Portal';
+            if(window.innerWidth < 1024) toggleSidebar();
+        }
+
+        function toggleSidebar() {
+            document.getElementById('sidebar').classList.toggle('open');
+            document.querySelector('.overlay').classList.toggle('show');
+        }
+
+        function toggleTheme() {
+            document.body.classList.toggle('light-mode');
+        }
+
+        // ===================== SCHEDULE =====================
+        function renderScheduleTable() {
+            const tbody = document.getElementById('scheduleBody');
+            tbody.innerHTML = '';
+            const times = ["08:20 - 09:00", "09:10 - 09:50", "10:00 - 10:40", "10:50 - 11:30", "11:40 - 12:20", "13:30 - 14:10", "14:20 - 15:00", "15:10 - 15:50"];
+            const dayKeys = ["Pazartesi", "Salı", "Çarşamba", "Perşembe", "Cuma"];
+            times.forEach((time, idx) => {
+                let row = `<tr><td class="time-col">${time}</td>`;
+                dayKeys.forEach(day => {
+                    const lesson = scheduleData[day][idx];
+                    const colorClass = lessonColors[lesson.lesson] || '';
+                    row += `<td><div class="lesson-cell ${colorClass}">${lesson.lesson}<span class="teacher-name">${lesson.teacher}</span></div></td>`;
+                });
+                row += '</tr>';
+                tbody.innerHTML += row;
+            });
+        }
+
+        function showTomorrow() {
+            const tomorrow = new Date();
+            tomorrow.setDate(tomorrow.getDate() + 1);
+            const dayName = days[tomorrow.getDay()];
+            const alert = document.getElementById('tomorrowAlert');
+            const container = document.getElementById('tomorrowLessons');
+            if(dayName === "Cumartesi" || dayName === "Pazar") {
+                container.innerHTML = '<span style="color: var(--success); font-weight: 600;">🎉 Yarın tatil! Keyfini çıkarın.</span>';
+            } else {
+                const lessons = scheduleData[dayName];
+                container.innerHTML = lessons.map(l => {
+                    const colorClass = lessonColors[l.lesson] || '';
+                    return `<div class="tomorrow-lesson-item ${colorClass}" style="background: var(--surface); border: 1px solid var(--border);">${l.time} - <strong>${l.lesson}</strong> <span style="opacity:0.7; font-size:0.75rem;">(${l.teacher})</span></div>`;
+                }).join('');
+            }
+            alert.classList.add('show');
+            alert.scrollIntoView({behavior: 'smooth'});
+        }
+
+        // ===================== DASHBOARD =====================
+        function updateTodaySchedule() {
+            const today = days[new Date().getDay()];
+            document.getElementById('todayName').textContent = today;
+            const todayLessons = scheduleData[today] || [];
+            document.getElementById('todayLessonCount').textContent = todayLessons.length;
+            const container = document.getElementById('todaySchedule');
+            if(todayLessons.length === 0) {
+                container.innerHTML = '<div class="empty-state"><i class="fas fa-umbrella-beach"></i><h3>Tatil! 🎉</h3><p>Bugün ders yok, dinlenmenin tam zamanı.</p></div>';
+            } else {
+                container.innerHTML = todayLessons.map(l => `
+                    <div class="list-item">
+                        <div class="item-header">
+                            <div>
+                                <div class="item-title">${l.lesson} - ${lessonsInfo[l.lesson]?.name || ''}</div>
+                                <div class="item-meta"><span><i class="fas fa-clock"></i> ${l.time}</span><span><i class="fas fa-user"></i> ${l.teacher}</span></div>
+                            </div>
+                            <span class="badge badge-primary">${l.lesson}</span>
+                        </div>
+                    </div>
+                `).join('');
+            }
+        }
+
+        function updateDashboardCounts() {
+            db.ref('class9d/homework').once('value', (snap) => {
+                const data = snap.val() || {};
+                const list = Object.values(data);
+                const pending = list.filter(h => new Date(h.date) >= new Date().setHours(0,0,0,0)).length;
+                document.getElementById('pendingHomework').textContent = pending;
+            });
+            db.ref('class9d/announcements').once('value', (snap) => {
+                const data = snap.val() || {};
+                const list = Object.values(data);
+                const thisWeek = list.filter(a => {
+                    const d = new Date(a.date);
+                    const now = new Date();
+                    return (now - d) / (1000 * 60 * 60 * 24) <= 7;
+                }).length;
+                document.getElementById('newAnnouncements').textContent = thisWeek;
+                const recent = document.getElementById('recentAnnouncements');
+                if(list.length === 0) recent.innerHTML = '<p style="color: var(--text-muted); font-size: 0.9rem;">Henüz duyuru yok.</p>';
+                else recent.innerHTML = list.slice(-3).reverse().map(a => `
+                    <div style="padding: 0.75rem 0; border-bottom: 1px solid var(--border);">
+                        <div style="font-weight: 600; font-size: 0.9rem; margin-bottom: 0.25rem;">${a.title}</div>
+                        <div style="font-size: 0.8rem; color: var(--text-muted);">${a.content.substring(0, 60)}...</div>
+                    </div>
+                `).join('');
+            });
+            db.ref('class9d/polls').once('value', (snap) => {
+                const data = snap.val() || {};
+                document.getElementById('activePolls').textContent = Object.keys(data).length;
+            });
+            db.ref('class9d/questions').once('value', (snap) => {
+                const data = snap.val() || {};
+                const list = Object.values(data);
+                const recentQ = document.getElementById('recentQuestions');
+                if(list.length === 0) recentQ.innerHTML = '<p style="color: var(--text-muted); font-size: 0.9rem;">Henüz soru sorulmamış.</p>';
+                else recentQ.innerHTML = list.slice(-3).reverse().map(q => `
+                    <div style="padding: 0.75rem 0; border-bottom: 1px solid var(--border);">
+                        <div style="font-weight: 600; font-size: 0.9rem; margin-bottom: 0.25rem;">${q.title}</div>
+                        <div style="font-size: 0.8rem; color: var(--text-muted);">${(q.answers ? Object.keys(q.answers).length : 0)} cevap</div>
+                    </div>
+                `).join('');
+            });
+        }
+
+        // ===================== HOMEWORK =====================
+        function renderHomework(list) {
+            const container = document.getElementById('homeworkList');
+            if(list.length === 0) {
+                container.innerHTML = '<div class="empty-state"><i class="fas fa-check-circle"></i><h3>Harika!</h3><p>Şu an bekleyen ödev veya sınav yok.</p></div>';
+                return;
+            }
+            container.innerHTML = list.sort((a,b) => new Date(a.date) - new Date(b.date)).map((h) => {
+                const isPast = new Date(h.date) < new Date().setHours(0,0,0,0);
+                return `
+                <div class="list-item" style="${isPast ? 'opacity: 0.6;' : ''}">
+                    <div class="item-header">
+                        <div>
+                            <div class="item-title">${h.title}</div>
+                            <div class="item-meta">
+                                <span><i class="fas fa-book"></i> ${h.lesson}</span>
+                                <span><i class="fas fa-calendar"></i> ${new Date(h.date).toLocaleDateString('tr-TR')}</span>
+                                <span class="badge ${h.type === 'Sınav' ? 'badge-danger' : h.type === 'Proje' ? 'badge-warning' : 'badge-primary'}">${h.type}</span>
+                            </div>
+                        </div>
+                        <button class="btn btn-danger btn-sm" onclick="deleteHomework('${h.id}')"><i class="fas fa-trash"></i></button>
+                    </div>
+                    <div class="item-content">${h.desc || 'Açıklama yok.'}</div>
+                </div>`;
+            }).join('');
+        }
+
+        function saveHomework(e) {
+            e.preventDefault();
+            const newRef = db.ref('class9d/homework').push();
+            newRef.set({
+                title: document.getElementById('hwTitle').value,
+                lesson: document.getElementById('hwLesson').value,
+                type: document.getElementById('hwType').value,
+                date: document.getElementById('hwDate').value,
+                desc: document.getElementById('hwDesc').value,
+                created: new Date().toISOString()
+            });
+            closeModal('homeworkModal');
+            e.target.reset();
+        }
+
+        function deleteHomework(id) {
+            if(confirm('Silmek istediğinize emin misiniz?')) {
+                db.ref('class9d/homework/' + id).remove();
+            }
+        }
+
+        // ===================== ANNOUNCEMENTS =====================
+        function renderAnnouncements(list) {
+            const container = document.getElementById('announcementList');
+            if(list.length === 0) {
+                container.innerHTML = '<div class="empty-state"><i class="fas fa-bullhorn"></i><h3>Sessizlik...</h3><p>Henüz duyuru yapılmamış. İlk duyuruyu sen yap!</p></div>';
+                return;
+            }
+            container.innerHTML = list.reverse().map((a) => `
+                <div class="list-item">
+                    <div class="item-header">
+                        <div>
+                            <div class="item-title">${a.title}</div>
+                            <div class="item-meta">
+                                <span><i class="fas fa-user"></i> ${a.author}</span>
+                                <span><i class="fas fa-clock"></i> ${new Date(a.date).toLocaleString('tr-TR')}</span>
+                            </div>
+                        </div>
+                        <button class="btn btn-danger btn-sm" onclick="deleteAnnouncement('${a.id}')"><i class="fas fa-trash"></i></button>
+                    </div>
+                    <div class="item-content">${a.content}</div>
+                </div>
+            `).join('');
+        }
+
+        function saveAnnouncement(e) {
+            e.preventDefault();
+            const newRef = db.ref('class9d/announcements').push();
+            newRef.set({
+                title: document.getElementById('annTitle').value,
+                content: document.getElementById('annContent').value,
+                author: document.getElementById('annAuthor').value,
+                date: new Date().toISOString()
+            });
+            closeModal('announcementModal');
+            e.target.reset();
+        }
+
+        function deleteAnnouncement(id) {
+            if(confirm('Silmek istediğinize emin misiniz?')) {
+                db.ref('class9d/announcements/' + id).remove();
+            }
+        }
+
+        // ===================== NOTES =====================
+        function renderNotes(list) {
+            const container = document.getElementById('notesList');
+            if(list.length === 0) {
+                container.innerHTML = '<div class="empty-state"><i class="fas fa-book-open"></i><h3>Not paylaşılmamış</h3><p>İlk ders notunu sen paylaş, arkadaşların faydalansın!</p></div>';
+                return;
+            }
+            container.innerHTML = list.reverse().map((n) => `
+                <div class="list-item">
+                    <div class="item-header">
+                        <div>
+                            <div class="item-title">${n.title}</div>
+                            <div class="item-meta">
+                                <span class="badge badge-primary">${n.lesson}</span>
+                                <span><i class="fas fa-clock"></i> ${new Date(n.date).toLocaleDateString('tr-TR')}</span>
+                            </div>
+                        </div>
+                        <div style="display:flex; gap:0.5rem;">
+                            ${n.fileData ? `<a href="${n.fileData}" download class="btn btn-primary btn-sm"><i class="fas fa-download"></i> İndir</a>` : ''}
+                            <button class="btn btn-danger btn-sm" onclick="deleteNote('${n.id}')"><i class="fas fa-trash"></i></button>
+                        </div>
+                    </div>
+                    <div class="item-content">${n.desc || ''}</div>
+                </div>
+            `).join('');
+        }
+
+        function saveNote(e) {
+            e.preventDefault();
+            const fileInput = document.getElementById('noteFile');
+            const saveData = (fileData) => {
+                const newRef = db.ref('class9d/notes').push();
+                newRef.set({
+                    title: document.getElementById('noteTitle').value,
+                    lesson: document.getElementById('noteLesson').value,
+                    desc: document.getElementById('noteDesc').value,
+                    fileData: fileData,
+                    date: new Date().toISOString()
+                });
+                closeModal('noteModal');
+                e.target.reset();
+            };
+            if(fileInput.files[0]) {
+                const reader = new FileReader();
+                reader.onload = (ev) => saveData(ev.target.result);
+                reader.readAsDataURL(fileInput.files[0]);
+            } else {
+                saveData(null);
+            }
+        }
+
+        function deleteNote(id) {
+            if(confirm('Silmek istediğinize emin misiniz?')) {
+                db.ref('class9d/notes/' + id).remove();
+            }
+        }
+
+        // ===================== Q&A =====================
+        function renderQA(list) {
+            const container = document.getElementById('qaList');
+            if(list.length === 0) {
+                container.innerHTML = '<div class="empty-state"><i class="fas fa-question-circle"></i><h3>Soru yok</h3><p>Bir şey mi merak ettin? İlk soruyu sen sor!</p></div>';
+                return;
+            }
+            container.innerHTML = list.reverse().map((q) => {
+                const answers = q.answers ? Object.values(q.answers) : [];
+                return `
+                <div class="qa-thread">
+                    <div class="qa-question">
+                        <div class="item-header" style="margin-bottom: 0.75rem;">
+                            <div>
+                                <div class="item-title">${q.title}</div>
+                                <div class="item-meta">
+                                    <span class="badge badge-primary">${q.lesson}</span>
+                                    <span><i class="fas fa-user"></i> ${q.author}</span>
+                                    <span><i class="fas fa-clock"></i> ${new Date(q.date).toLocaleDateString('tr-TR')}</span>
+                                </div>
+                            </div>
+                            <button class="btn btn-danger btn-sm" onclick="deleteQuestion('${q.id}')"><i class="fas fa-trash"></i></button>
+                        </div>
+                        <div class="item-content">${q.content}</div>
+                        <div style="margin-top: 1rem;">
+                            <button class="btn btn-secondary btn-sm" onclick="openAnswerModal('${q.id}')"><i class="fas fa-reply"></i> Cevap Yaz</button>
+                        </div>
+                    </div>
+                    <div class="qa-answers">
+                        ${answers.map(ans => `
+                            <div class="qa-answer">
+                                <div class="qa-author"><i class="fas fa-user-circle"></i> ${ans.author}</div>
+                                <div class="qa-text">${ans.text}</div>
+                                <div style="font-size: 0.75rem; color: var(--text-muted); margin-top: 0.5rem;">${new Date(ans.date).toLocaleString('tr-TR')}</div>
+                            </div>
+                        `).join('')}
+                    </div>
+                </div>`;
+            }).join('');
+        }
+
+        function saveQuestion(e) {
+            e.preventDefault();
+            const newRef = db.ref('class9d/questions').push();
+            newRef.set({
+                title: document.getElementById('qTitle').value,
+                lesson: document.getElementById('qLesson').value,
+                content: document.getElementById('qContent').value,
+                author: document.getElementById('qAuthor').value,
+                date: new Date().toISOString()
+            });
+            closeModal('questionModal');
+            e.target.reset();
+        }
+
+        function deleteQuestion(id) {
+            if(confirm('Silmek istediğinize emin misiniz?')) {
+                db.ref('class9d/questions/' + id).remove();
+            }
+        }
+
+        let currentAnswerId = null;
+        function openAnswerModal(id) {
+            currentAnswerId = id;
+            const modal = document.createElement('div');
+            modal.className = 'modal-overlay show';
+            modal.id = 'answerModal';
+            modal.innerHTML = `
+                <div class="modal">
+                    <div class="modal-header">
+                        <div class="modal-title">Cevap Yaz</div>
+                        <button class="modal-close" onclick="document.getElementById('answerModal').remove()"><i class="fas fa-times"></i></button>
+                    </div>
+                    <form onsubmit="saveAnswer(event)">
+                        <div class="form-group"><label class="form-label">Adınız</label><input type="text" class="form-control" id="ansAuthor" required></div>
+                        <div class="form-group"><label class="form-label">Cevabınız</label><textarea class="form-control" id="ansText" required rows="4"></textarea></div>
+                        <button type="submit" class="btn btn-primary" style="width:100%"><i class="fas fa-paper-plane"></i> Gönder</button>
+                    </form>
+                </div>`;
+            document.body.appendChild(modal);
+        }
+
+        function saveAnswer(e) {
+            e.preventDefault();
+            const newRef = db.ref('class9d/questions/' + currentAnswerId + '/answers').push();
+            newRef.set({
+                author: document.getElementById('ansAuthor').value,
+                text: document.getElementById('ansText').value,
+                date: new Date().toISOString()
+            });
+            document.getElementById('answerModal').remove();
+        }
+
+        // ===================== POLLS =====================
+        function renderPolls(list) {
+            const container = document.getElementById('pollList');
+            if(list.length === 0) {
+                container.innerHTML = '<div class="empty-state"><i class="fas fa-poll"></i><h3>Anket yok</h3><p>Sınıfın fikrini merak ettiğin bir konu mu var? Anket oluştur!</p></div>';
+                return;
+            }
+            container.innerHTML = list.reverse().map((p) => {
+                const totalVotes = p.options.reduce((sum, o) => sum + (o.votes || 0), 0);
+                return `
+                <div class="list-item">
+                    <div class="item-header" style="margin-bottom: 1rem;">
+                        <div class="item-title">${p.question}</div>
+                        <button class="btn btn-danger btn-sm" onclick="deletePoll('${p.id}')"><i class="fas fa-trash"></i></button>
+                    </div>
+                    <div class="poll-options">
+                        ${p.options.map((o, oIdx) => {
+                            const percent = totalVotes > 0 ? Math.round((o.votes / totalVotes) * 100) : 0;
+                            return `
+                            <div class="poll-option" onclick="votePoll('${p.id}', ${oIdx})">
+                                <div class="poll-bar" style="width: ${percent}%"></div>
+                                <div class="poll-option-content">
+                                    <span>${o.text}</span>
+                                    <span class="poll-votes">${o.votes || 0} oy (${percent}%)</span>
+                                </div>
+                            </div>`;
+                        }).join('')}
+                    </div>
+                    <div style="margin-top: 0.75rem; font-size: 0.8rem; color: var(--text-muted);">Toplam ${totalVotes} oy</div>
+                </div>`;
+            }).join('');
+        }
+
+        function savePoll(e) {
+            e.preventDefault();
+            const options = document.getElementById('pollOptions').value.split('\n').filter(o => o.trim()).map(o => ({text: o.trim(), votes: 0}));
+            if(options.length < 2) { alert('En az 2 seçenek girmelisiniz!'); return; }
+            const newRef = db.ref('class9d/polls').push();
+            newRef.set({
+                question: document.getElementById('pollQuestion').value,
+                options: options,
+                date: new Date().toISOString()
+            });
+            closeModal('pollModal');
+            e.target.reset();
+        }
+
+        function votePoll(id, oIdx) {
+            db.ref('class9d/polls/' + id + '/options/' + oIdx + '/votes').transaction((current) => {
+                return (current || 0) + 1;
+            });
+        }
+
+        function deletePoll(id) {
+            if(confirm('Silmek istediğinize emin misiniz?')) {
+                db.ref('class9d/polls/' + id).remove();
+            }
+        }
+
+        // ===================== MEMORIES =====================
+        function renderMemories(list) {
+            const container = document.getElementById('memoryGallery');
+            if(list.length === 0) {
+                container.innerHTML = '<div class="empty-state" style="grid-column: 1/-1;"><i class="fas fa-images"></i><h3>Henüz anı yok</h3><p>Sınıf fotoğraflarını buraya yükleyin, yıllar sonra güzel anılara dönüştürün.</p></div>';
+                return;
+            }
+            container.innerHTML = list.reverse().map((m) => `
+                <div class="gallery-item">
+                    <div class="gallery-img">
+                        <img src="${m.fileData}" style="width:100%; height:100%; object-fit:cover; border-radius: 16px 16px 0 0;" alt="Anı" onerror="this.parentElement.innerHTML='<i class=\'fas fa-image\'></i>'">
+                    </div>
+                    <div class="gallery-content">
+                        <div class="gallery-date"><i class="fas fa-calendar"></i> ${new Date(m.date).toLocaleDateString('tr-TR')}</div>
+                        <div class="gallery-desc">${m.desc}</div>
+                        <button class="btn btn-danger btn-sm" style="margin-top: 0.75rem; width:100%" onclick="deleteMemory('${m.id}')"><i class="fas fa-trash"></i> Sil</button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function saveMemory(e) {
+            e.preventDefault();
+            const fileInput = document.getElementById('memFile');
+            if(!fileInput.files[0]) return;
+            const reader = new FileReader();
+            reader.onload = (ev) => {
+                const newRef = db.ref('class9d/memories').push();
+                newRef.set({
+                    desc: document.getElementById('memDesc').value,
+                    fileData: ev.target.result,
+                    date: new Date().toISOString()
+                });
+                closeModal('memoryModal');
+                e.target.reset();
+            };
+            reader.readAsDataURL(fileInput.files[0]);
+        }
+
+        function deleteMemory(id) {
+            if(confirm('Silmek istediğinize emin misiniz?')) {
+                db.ref('class9d/memories/' + id).remove();
+            }
+        }
+
+        // ===================== ARCHIVE =====================
+        function renderArchive(notesList) {
+            const grid = document.getElementById('archiveGrid');
+            const filesByLesson = {};
+            notesList.forEach(n => {
+                if(!filesByLesson[n.lesson]) filesByLesson[n.lesson] = [];
+                filesByLesson[n.lesson].push(n);
+            });
+            grid.innerHTML = Object.entries(lessonsInfo).map(([code, info]) => {
+                const count = (filesByLesson[code] || []).length;
+                return `
+                <div class="folder-card" onclick="openFolder('${code}', ${JSON.stringify(filesByLesson[code] || []).replace(/"/g, '&quot;')})">
+                    <div class="folder-icon"><i class="fas fa-folder"></i></div>
+                    <div class="folder-name">${code}</div>
+                    <div class="folder-count">${info.name}<br>${count} dosya</div>
+                </div>`;
+            }).join('');
+        }
+
+        function openFolder(code, files) {
+            document.getElementById('archiveGrid').style.display = 'none';
+            document.getElementById('archiveFiles').style.display = 'block';
+            document.getElementById('archiveFolderTitle').textContent = code + ' - ' + lessonsInfo[code].name;
+            const list = document.getElementById('archiveFileList');
+            if(!files || files.length === 0) {
+                list.innerHTML = '<p style="color: var(--text-muted); padding: 1rem;">Bu klasörde henüz dosya yok. Notlar bölümünden bu derse dosya ekleyebilirsiniz.</p>';
+            } else {
+                list.innerHTML = files.map(f => `
+                    <div class="file-item">
+                        <div class="file-info">
+                            <i class="fas fa-file file-icon"></i>
+                            <div>
+                                <div style="font-weight: 600; font-size: 0.9rem;">${f.title}</div>
+                                <div style="font-size: 0.8rem; color: var(--text-muted);">${new Date(f.date).toLocaleDateString('tr-TR')}</div>
+                            </div>
+                        </div>
+                        ${f.fileData ? `<a href="${f.fileData}" download class="btn btn-primary btn-sm"><i class="fas fa-download"></i></a>` : ''}
+                    </div>
+                `).join('');
+            }
+        }
+
+        function backToArchive() {
+            document.getElementById('archiveGrid').style.display = 'grid';
+            document.getElementById('archiveFiles').style.display = 'none';
+        }
+
+        // ===================== CHATBOT =====================
+        function sendChat() {
+            const input = document.getElementById('chatInput');
+            const msg = input.value.trim();
+            if(!msg) return;
+            addChatMessage(msg, 'user');
+            input.value = '';
+            setTimeout(() => {
+                const reply = getBotReply(msg);
+                addChatMessage(reply, 'bot');
+            }, 500);
+        }
+
+        function quickChat(msg) {
+            document.getElementById('chatInput').value = msg;
+            sendChat();
+        }
+
+        function addChatMessage(text, sender) {
+            const container = document.getElementById('chatMessages');
+            const div = document.createElement('div');
+            div.className = `chat-message ${sender}`;
+            div.innerHTML = text;
+            container.appendChild(div);
+            container.scrollTop = container.scrollHeight;
+        }
+
+        function getBotReply(msg) {
+            const lower = msg.toLowerCase();
+            const today = days[new Date().getDay()];
+            const tomorrow = days[(new Date().getDay() + 1) % 7];
+
+            if(lower.includes('yarın') && lower.includes('ders')) {
+                if(tomorrow === 'Cumartesi' || tomorrow === 'Pazar') return '🎉 Yarın tatil! Ders yok.';
+                const lessons = scheduleData[tomorrow];
+                return `<strong>Yarınki (${tomorrow}) dersleriniz:</strong><br>` + 
+                    lessons.map(l => `• ${l.time}: <strong>${l.lesson}</strong> (${l.teacher})`).join('<br>');
+            }
+            if((lower.includes('bugün') || lower.includes('bugunkü')) && lower.includes('ders')) {
+                const lessons = scheduleData[today];
+                if(!lessons) return '🎉 Bugün tatil!';
+                return `<strong>Bugünkü (${today}) dersleriniz:</strong><br>` + 
+                    lessons.map(l => `• ${l.time}: <strong>${l.lesson}</strong> (${l.teacher})`).join('<br>');
+            }
+            if(lower.includes('ders programı') || lower.includes('haftalık')) {
+                return 'Ders programını sol menüden "Ders Programı" bölümünden görüntüleyebilirsiniz. 📅';
+            }
+
+            const teacherMatches = {
+                'mat': 'MAT', 'matematik': 'MAT',
+                'fizik': 'FİZ1', 'fiz': 'FİZ1',
+                'kimya': 'KİM1', 'kim': 'KİM1',
+                'biyoloji': 'BİYO1', 'biyo': 'BİYO1',
+                'tarih': 'TAR', 'tar': 'TAR',
+                'coğrafya': 'COĞ', 'coğ': 'COĞ',
+                'ingilizce': 'BYDİ', 'byd': 'BYDİ', 'ing': 'BYDİ',
+                'almanca': 'İYDAL', 'alm': 'İYDAL', 'iydal': 'İYDAL',
+                'edebiyat': 'TDE', 'tde': 'TDE', 'türkçe': 'TDE',
+                'din': 'DİN', 'dkab': 'DİN',
+                'beden': 'BED', 'bed': 'BED',
+                'bilişim': 'BİLT', 'bilt': 'BİLT', 'bt': 'BİLT',
+                'resim': 'RESMÜ', 'resmü': 'RESMÜ', 'müzik': 'RESMÜ',
+                'sağlık': 'SAĞ', 'sağ': 'SAĞ',
+                'sanat': 'SNE9', 'sne': 'SNE9',
+                'tdb': 'TDB', 'rehberlik': 'REHB', 'rehb': 'REHB'
+            };
+            for(let key in teacherMatches) {
+                if(lower.includes(key) && (lower.includes('öğretmen') || lower.includes('hoc') || lower.includes('kim'))) {
+                    const code = teacherMatches[key];
+                    const info = lessonsInfo[code];
+                    return `<strong>${info.name}</strong> öğretmeniniz <strong>${info.teacher}</strong>. Haftada ${info.hours} saat dersi var.`;
+                }
+            }
+            if(lower.includes('öğretmen') || lower.includes('hoca')) {
+                return 'Tüm öğretmenlerinizi sol menüden "Öğretmenlerimiz" bölümünde listeleyebilirsiniz. 👨‍🏫';
+            }
+
+            if(lower.includes('ödev') || lower.includes('sınav') || lower.includes('yazılı')) {
+                return 'Ödev ve sınavları "Ödev & Sınav" bölümünden görüntüleyebilirsiniz. 📚';
+            }
+
+            if(lower.includes('merhaba') || lower.includes('selam')) return 'Merhaba! 👋 Size nasıl yardımcı olabilirim?';
+            if(lower.includes('nasılsın')) return 'Teşekkürler, ben bir yapay zekayım ama sizin için buradayım! 😊';
+            if(lower.includes('teşekkür')) return 'Rica ederim! Başka bir sorunuz olursa buradayım. 🎓';
+            if(lower.includes('okul') && lower.includes('adı')) return 'Süleyman Demirel Fen Lisesi, Isparta. Sınıf: 9-D, Sınıf Öğretmeni: Ahmet Güngör.';
+
+            return 'Bu konuda tam emin değilim. 🤔 Ders programı, öğretmenler, ödevler veya sınavlar hakkında soru sorabilirsiniz.';
+        }
+
+        // ===================== TEACHERS =====================
+        function renderTeachers() {
+            const grid = document.getElementById('teacherGrid');
+            grid.innerHTML = Object.entries(lessonsInfo).map(([code, info]) => `
+                <div class="teacher-card">
+                    <div class="teacher-avatar">${info.teacher.split(' ').map(n => n[0]).join('').substring(0,2)}</div>
+                    <div class="teacher-name-card">${info.teacher}</div>
+                    <div class="teacher-lesson">${info.name}</div>
+                    <div class="teacher-hours">${info.hours} Saat / Hafta</div>
+                </div>
+            `).join('');
+        }
+
+        // ===================== MODALS =====================
+        function openModal(id) { document.getElementById(id).classList.add('show'); }
+        function closeModal(id) { document.getElementById(id).classList.remove('show'); }
+        document.querySelectorAll('.modal-overlay').forEach(m => {
+            m.addEventListener('click', (e) => { if(e.target === m) m.classList.remove('show'); });
+        });
+
+        // ===================== START =====================
+        window.onload = init;
+    </script>
+</body>
+</html>
