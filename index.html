@@ -1079,6 +1079,7 @@
             storageBucket: "dsite-2b9a9.firebasestorage.app",
             messagingSenderId: "1067138241772",
             appId: "1:1067138241772:web:0f68b5e9f808898c8941c9"
+
         };
 
         // Initialize Firebase - güvenli başlatma
@@ -1866,7 +1867,7 @@
             if(state === 'ready') {
                 bar.style.background = 'rgba(16,185,129,0.1)';
                 bar.style.borderColor = 'rgba(16,185,129,0.3)';
-                text.innerHTML = '<i class="fas fa-check-circle" style="color:var(--success);margin-right:6px"></i>Yapay zeka (Gemini) hazır! Sorunuzu yazabilirsiniz.';
+                text.innerHTML = '<i class="fas fa-check-circle" style="color:var(--success);margin-right:6px"></i>Yapay zeka (Gemini 2.5 Flash) hazır! Sorunuzu yazabilirsiniz.';
             } else if(state === 'no-key') {
                 bar.style.background = 'rgba(245,158,11,0.1)';
                 bar.style.borderColor = 'rgba(245,158,11,0.3)';
@@ -1954,7 +1955,7 @@ Kısa, sıcak ve yardımcı cevaplar ver. Emoji kullanabilirsin. Yalnızca Türk
             container.scrollTop = container.scrollHeight;
 
             try {
-                const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${activeApiKey}`;
+                const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${activeApiKey}`;
                 const response = await fetch(url, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
