@@ -607,23 +607,7 @@
             animation: spin 1s ease-in-out infinite;
         }
         @keyframes spin { to { transform: rotate(360deg); } }
-        .sync-status {
-            position: fixed;
-            bottom: 1rem;
-            right: 1rem;
-            padding: 0.75rem 1rem;
-            background: var(--surface);
-            border: 1px solid var(--border);
-            border-radius: 12px;
-            font-size: 0.8rem;
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            z-index: 1000;
-            box-shadow: var(--shadow);
-        }
-        .sync-status.online { color: var(--success); }
-        .sync-status.offline { color: var(--warning); }
+        .sync-status { display: none; }
 
         @media (max-width: 1024px) {
             .sidebar { transform: translateX(-100%); }
@@ -642,7 +626,70 @@
             .quick-actions { justify-content: center; }
             .archive-grid, .gallery-grid { grid-template-columns: 1fr; }
         }
-        ::-webkit-scrollbar { width: 8px; }
+        .connection-dot {
+            width: 10px; height: 10px;
+            border-radius: 50%;
+            background: var(--text-muted);
+            display: inline-block;
+            margin-left: 8px;
+            transition: background 0.4s;
+            box-shadow: 0 0 0 0 rgba(16,185,129,0);
+        }
+        .connection-dot.online {
+            background: var(--success);
+            animation: pulse-green 2s infinite;
+        }
+        .connection-dot.offline {
+            background: var(--warning);
+        }
+        @keyframes pulse-green {
+            0% { box-shadow: 0 0 0 0 rgba(16,185,129,0.5); }
+            70% { box-shadow: 0 0 0 6px rgba(16,185,129,0); }
+            100% { box-shadow: 0 0 0 0 rgba(16,185,129,0); }
+        }
+        .ai-typing {
+            display: inline-flex; gap: 4px; align-items: center; padding: 0.5rem 1rem;
+        }
+        .ai-typing span {
+            width: 8px; height: 8px; border-radius: 50%;
+            background: var(--primary); animation: bounce 1.2s infinite;
+        }
+        .ai-typing span:nth-child(2) { animation-delay: 0.2s; }
+        .ai-typing span:nth-child(3) { animation-delay: 0.4s; }
+        @keyframes bounce { 0%,80%,100%{transform:scale(0.5)} 40%{transform:scale(1.1)} }
+        .suggestion-card {
+            background: var(--glass);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 1.25rem;
+            box-shadow: var(--shadow);
+            transition: all 0.2s;
+            display: flex;
+            gap: 1rem;
+            align-items: flex-start;
+        }
+        .suggestion-card:hover { transform: translateX(5px); border-color: var(--primary); }
+        .suggestion-book-icon {
+            width: 48px; height: 48px; border-radius: 12px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 1.4rem; flex-shrink: 0;
+        }
+        .suggestion-book-icon.test { background: rgba(99,102,241,0.2); color: var(--primary); }
+        .suggestion-book-icon.okuma { background: rgba(236,72,153,0.2); color: var(--secondary); }
+        .suggestion-book-icon.kaynak { background: rgba(6,182,212,0.2); color: var(--accent); }
+        .suggestion-body { flex: 1; min-width: 0; }
+        .suggestion-title { font-weight: 700; font-size: 1rem; margin-bottom: 0.25rem; }
+        .suggestion-meta { display: flex; gap: 0.75rem; flex-wrap: wrap; font-size: 0.8rem; color: var(--text-muted); margin-bottom: 0.5rem; }
+        .suggestion-comment { font-size: 0.9rem; color: var(--text-muted); line-height: 1.5; }
+        .suggestion-filters { display: flex; gap: 0.5rem; flex-wrap: wrap; margin-bottom: 1.5rem; }
+        .filter-btn {
+            padding: 0.4rem 1rem; border-radius: 50px;
+            border: 1px solid var(--border); background: var(--surface);
+            color: var(--text-muted); font-size: 0.85rem; cursor: pointer;
+            font-family: inherit; transition: all 0.2s;
+        }
+        .filter-btn.active { background: var(--primary); color: white; border-color: var(--primary); }
         ::-webkit-scrollbar-track { background: var(--bg); }
         ::-webkit-scrollbar-thumb { background: var(--surface-light); border-radius: 4px; }
         ::-webkit-scrollbar-thumb:hover { background: var(--border); }
@@ -672,7 +719,8 @@
                 <li class="nav-item"><button class="nav-link" onclick="showSection('announcements', this)"><i class="fas fa-bullhorn"></i> Duyurular</button></li>
                 <li class="nav-item"><button class="nav-link" onclick="showSection('polls', this)"><i class="fas fa-poll"></i> Anketler</button></li>
                 <li class="nav-item"><button class="nav-link" onclick="showSection('memories', this)"><i class="fas fa-camera"></i> Anılar</button></li>
-                <li class="nav-item"><button class="nav-link" onclick="showSection('chatbot', this)"><i class="fas fa-robot"></i> Chatbot</button></li>
+                <li class="nav-item"><button class="nav-link" onclick="showSection('chatbot', this)"><i class="fas fa-robot"></i> AI Asistan</button></li>
+                <li class="nav-item"><button class="nav-link" onclick="showSection('suggestions', this)"><i class="fas fa-lightbulb"></i> Öneriler</button></li>
                 <li class="nav-item"><button class="nav-link" onclick="showSection('teachers', this)"><i class="fas fa-chalkboard-teacher"></i> Öğretmenler</button></li>
             </ul>
             <div class="sidebar-footer">
@@ -689,7 +737,7 @@
                     <h2 id="page-title">Hoş Geldin, 9-D! 👋</h2>
                     <p>Süleyman Demirel Fen Lisesi - Sınıf Öğretmeni: Ahmet Güngör</p>
                 </div>
-                <div class="date-badge"><i class="fas fa-calendar"></i><span id="current-date"></span></div>
+                <div class="date-badge"><i class="fas fa-calendar"></i><span id="current-date"></span><span class="connection-dot" id="connectionDot" title="Bağlantı durumu"></span></div>
             </div>
 
             <!-- Dashboard -->
@@ -827,28 +875,89 @@
                 <div class="gallery-grid" id="memoryGallery"><div class="loading-spinner"></div> Yükleniyor...</div>
             </section>
 
-            <!-- Chatbot -->
+            <!-- AI Chatbot -->
             <section id="chatbot" class="section">
-                <div class="section-title"><i class="fas fa-robot"></i> Sınıf Asistanı</div>
-                <p style="color: var(--text-muted); margin-bottom: 1.5rem;">"Mat sınavı ne zaman?", "Yarın hangi dersler var?", "Fizik öğretmeni kim?" gibi sorular sorabilirsiniz.</p>
+                <div class="section-title"><i class="fas fa-robot"></i> AI Asistan</div>
+                <p style="color: var(--text-muted); margin-bottom: 1rem;">Ders programı, öğretmenler, ödevler hakkında sorularınızı yapay zekaya sorun. Gerçek cevaplar alın! 🤖</p>
+
+                <!-- Kullanıcıya gösterilen durum bandı -->
+                <div id="aiStatusBar" style="background: rgba(245,158,11,0.1); border: 1px solid rgba(245,158,11,0.3); border-radius: 12px; padding: 0.875rem 1.25rem; margin-bottom: 1.5rem; font-size: 0.85rem; color: var(--text-muted);">
+                    <i class="fas fa-spinner fa-spin" style="color: var(--warning); margin-right: 6px;"></i>
+                    <span id="aiStatusText">Yapay zeka hazırlanıyor...</span>
+                </div>
+
+                <!-- Admin: Gemini API anahtarı girişi -->
+                <div id="adminKeyPanel" style="display:none; background: rgba(66,133,244,0.08); border: 1px solid rgba(66,133,244,0.3); border-radius: 16px; padding: 1.25rem 1.5rem; margin-bottom: 1.5rem;">
+                    <div style="font-weight:700; margin-bottom:1rem; font-size:1rem; display:flex; align-items:center; gap:0.5rem;">
+                        <img src="https://www.gstatic.com/lamda/images/gemini_sparkle_v002_d4735304ff6292a690345.svg" style="width:20px;height:20px;" onerror="this.style.display='none'">
+                        <i class="fas fa-key" style="color:#4285f4"></i> Google Gemini API Anahtarı
+                    </div>
+
+                    <!-- Adım adım rehber -->
+                    <div style="background:var(--surface); border-radius:12px; padding:1rem; margin-bottom:1rem; font-size:0.82rem; line-height:1.8;">
+                        <div style="font-weight:700; margin-bottom:0.5rem; color:var(--text);">📋 Anahtarı nasıl alacaksınız?</div>
+                        <div><span style="background:#4285f4; color:white; border-radius:50%; width:18px; height:18px; display:inline-flex; align-items:center; justify-content:center; font-size:0.7rem; font-weight:700; margin-right:6px;">1</span>
+                            <a href="https://aistudio.google.com/apikey" target="_blank" style="color:#4285f4; font-weight:600;">aistudio.google.com/apikey</a> adresine gidin</div>
+                        <div style="margin-top:4px;"><span style="background:#4285f4; color:white; border-radius:50%; width:18px; height:18px; display:inline-flex; align-items:center; justify-content:center; font-size:0.7rem; font-weight:700; margin-right:6px;">2</span>
+                            Google hesabınızla giriş yapın (Gmail hesabı yeterli)</div>
+                        <div style="margin-top:4px;"><span style="background:#4285f4; color:white; border-radius:50%; width:18px; height:18px; display:inline-flex; align-items:center; justify-content:center; font-size:0.7rem; font-weight:700; margin-right:6px;">3</span>
+                            <strong>"Create API Key"</strong> butonuna tıklayın</div>
+                        <div style="margin-top:4px;"><span style="background:#4285f4; color:white; border-radius:50%; width:18px; height:18px; display:inline-flex; align-items:center; justify-content:center; font-size:0.7rem; font-weight:700; margin-right:6px;">4</span>
+                            <strong>"AIzaSy..."</strong> ile başlayan anahtarı kopyalayın</div>
+                        <div style="margin-top:4px;"><span style="background:#4285f4; color:white; border-radius:50%; width:18px; height:18px; display:inline-flex; align-items:center; justify-content:center; font-size:0.7rem; font-weight:700; margin-right:6px;">5</span>
+                            Aşağıya yapıştırıp <strong>"Firebase'e Kaydet"</strong> deyin</div>
+                    </div>
+
+                    <div style="display:flex; gap:0.5rem; flex-wrap:wrap; align-items:center;">
+                        <input type="password" id="adminKeyInput" placeholder="AIzaSy..."
+                            style="background:var(--surface); border:1px solid var(--border); border-radius:8px; padding:0.5rem 0.85rem; color:var(--text); font-size:0.9rem; flex:1; min-width:220px; font-family:monospace; letter-spacing:0.5px;">
+                        <button class="btn btn-primary btn-sm" onclick="saveApiKeyToFirebase()"><i class="fas fa-cloud-upload-alt"></i> Firebase'e Kaydet</button>
+                        <button class="btn btn-secondary btn-sm" onclick="document.getElementById('adminKeyPanel').style.display='none'">İptal</button>
+                    </div>
+                    <small style="display:block; margin-top:0.6rem; color:var(--text-muted); font-size:0.78rem;">
+                        <i class="fas fa-shield-alt" style="color:var(--success)"></i>
+                        Anahtar Firebase veritabanınızda saklanır. <strong>Bir kez girilince tüm cihazlarda otomatik çalışır.</strong> Ücretsiz — kredi kartı gerekmez.
+                    </small>
+                </div>
                 <div class="chat-container">
                     <div class="chat-messages" id="chatMessages">
-                        <div class="chat-message bot"><strong>Merhaba! 👋</strong><br>Ben 9-D sınıf asistanıyım. Bana ders programı, ödevler, sınavlar veya öğretmenler hakkında soru sorabilirsiniz.</div>
+                        <div class="chat-message bot"><strong>Merhaba! 👋</strong><br>Ben 9-D sınıf yapay zeka asistanıyım. Ders programı, öğretmenler, ödevler veya başka konularda yardımcı olabilirim.</div>
                     </div>
                     <div class="chat-input-area">
                         <input type="text" class="form-control" id="chatInput" placeholder="Bir soru yazın..." onkeypress="if(event.key==='Enter') sendChat()">
                         <button class="btn btn-primary" onclick="sendChat()"><i class="fas fa-paper-plane"></i></button>
                     </div>
                 </div>
-                <div style="margin-top: 1.5rem;">
-                    <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 0.75rem;"><strong>Örnek Sorular:</strong></p>
-                    <div style="display: flex; flex-wrap: wrap; gap: 0.5rem;">
-                        <button class="btn btn-secondary btn-sm" onclick="quickChat('Yarın hangi dersler var?')">Yarın hangi dersler var?</button>
-                        <button class="btn btn-secondary btn-sm" onclick="quickChat('Matematik sınavı ne zaman?')">Matematik sınavı ne zaman?</button>
-                        <button class="btn btn-secondary btn-sm" onclick="quickChat('Fizik öğretmeni kim?')">Fizik öğretmeni kim?</button>
-                        <button class="btn btn-secondary btn-sm" onclick="quickChat('Bu hafta ödev var mı?')">Bu hafta ödev var mı?</button>
+                <div style="margin-top: 1.5rem; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:0.75rem;">
+                    <div>
+                        <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 0.75rem;"><strong>Örnek Sorular:</strong></p>
+                        <div style="display: flex; flex-wrap: wrap; gap: 0.5rem;">
+                            <button class="btn btn-secondary btn-sm" onclick="quickChat('Yarın hangi dersler var?')">Yarın hangi dersler var?</button>
+                            <button class="btn btn-secondary btn-sm" onclick="quickChat('Fizik öğretmeni kim?')">Fizik öğretmeni kim?</button>
+                            <button class="btn btn-secondary btn-sm" onclick="quickChat('Bu hafta kaç saat matematik var?')">Kaç saat matematik var?</button>
+                            <button class="btn btn-secondary btn-sm" onclick="quickChat('Almanca öğretmeni kim?')">Almanca öğretmeni kim?</button>
+                        </div>
                     </div>
+                    <button class="btn btn-secondary btn-sm" onclick="toggleAdminKeyPanel()" style="white-space:nowrap;">
+                        <i class="fas fa-key"></i> Admin: API Anahtarı
+                    </button>
                 </div>
+            </section>
+
+            <!-- Suggestions -->
+            <section id="suggestions" class="section">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+                    <div class="section-title" style="margin:0"><i class="fas fa-lightbulb"></i> Kitap & Kaynak Önerileri</div>
+                    <button class="btn btn-primary" onclick="openModal('suggestionModal')"><i class="fas fa-plus"></i> Öneri Ekle</button>
+                </div>
+                <p style="color: var(--text-muted); margin-bottom: 1.25rem; font-size: 0.9rem;">Arkadaşlarınıza kitap, test kitabı veya kaynak önerisinde bulunun. 📚</p>
+                <div class="suggestion-filters">
+                    <button class="filter-btn active" onclick="filterSuggestions('tümü', this)">Tümü</button>
+                    <button class="filter-btn" onclick="filterSuggestions('test', this)">📝 Test Kitabı</button>
+                    <button class="filter-btn" onclick="filterSuggestions('okuma', this)">📖 Okuma Kitabı</button>
+                    <button class="filter-btn" onclick="filterSuggestions('kaynak', this)">📘 Kaynak Kitap</button>
+                </div>
+                <div class="item-list" id="suggestionsList"><div class="loading-spinner"></div> Yükleniyor...</div>
             </section>
 
             <!-- Teachers -->
@@ -926,6 +1035,26 @@
         </div>
     </div>
 
+    <div class="modal-overlay" id="suggestionModal">
+        <div class="modal">
+            <div class="modal-header"><div class="modal-title">Kitap / Kaynak Öner</div><button class="modal-close" onclick="closeModal('suggestionModal')"><i class="fas fa-times"></i></button></div>
+            <form onsubmit="saveSuggestion(event)">
+                <div class="form-group"><label class="form-label">Kitap / Kaynak Adı</label><input type="text" class="form-control" id="sugTitle" required placeholder="Örn: Supara TYT Matematik Soru Bankası"></div>
+                <div class="form-group"><label class="form-label">Tür</label>
+                    <select class="form-control" id="sugType">
+                        <option value="test">📝 Test Kitabı</option>
+                        <option value="okuma">📖 Okuma / Roman</option>
+                        <option value="kaynak">📘 Kaynak / Konu Kitabı</option>
+                    </select>
+                </div>
+                <div class="form-group"><label class="form-label">İlgili Ders (opsiyonel)</label><select class="form-control" id="sugLesson"><option value="">Genel / Tümü</option></select></div>
+                <div class="form-group"><label class="form-label">Neden Öneriyorsunuz?</label><textarea class="form-control" id="sugComment" required placeholder="Kısaca açıklayın, arkadaşlarınız için faydalı olsun..."></textarea></div>
+                <div class="form-group"><label class="form-label">Adınız</label><input type="text" class="form-control" id="sugAuthor" required placeholder="İsminiz"></div>
+                <button type="submit" class="btn btn-primary" style="width:100%"><i class="fas fa-paper-plane"></i> Öner</button>
+            </form>
+        </div>
+    </div>
+
     <div class="modal-overlay" id="memoryModal">
         <div class="modal">
             <div class="modal-header"><div class="modal-title">Anı Ekle</div><button class="modal-close" onclick="closeModal('memoryModal')"><i class="fas fa-times"></i></button></div>
@@ -950,42 +1079,52 @@
             storageBucket: "dsite-2b9a9.firebasestorage.app",
             messagingSenderId: "1067138241772",
             appId: "1:1067138241772:web:0f68b5e9f808898c8941c9"
-
         };
 
-        // Initialize Firebase
-        const app = firebase.initializeApp(firebaseConfig);
-        const db = firebase.database();
+        // Initialize Firebase - güvenli başlatma
+        let db = null;
+        try {
+            const app = firebase.initializeApp(firebaseConfig);
+            db = firebase.database();
+        } catch(e) {
+            console.warn('Firebase başlatılamadı. Config bilgilerini doldurun:', e.message);
+        }
+
+        // Firebase gerektiren tüm işlemleri güvenli şekilde sarmalayan yardımcı
+        function dbRef(path) {
+            if(!db) return null;
+            return db.ref(path);
+        }
 
         // ===================== DATA =====================
         const scheduleData = {
             "Pazartesi": [
                 {time: "08:20 - 09:00", lesson: "MAT", teacher: "Ahmet Güngör"},
                 {time: "09:10 - 09:50", lesson: "MAT", teacher: "Ahmet Güngör"},
-                {time: "10:00 - 10:40", lesson: "SAĞ", teacher: "Veysel Efe"},
+                {time: "10:00 - 10:40", lesson: "TDB", teacher: "Mehmet Yavuz"},
                 {time: "10:50 - 11:30", lesson: "FİZ1", teacher: "Gökay Açıkgöz"},
                 {time: "11:40 - 12:20", lesson: "FİZ1", teacher: "Gökay Açıkgöz"},
                 {time: "13:30 - 14:10", lesson: "REHB", teacher: "Ahmet Güngör"},
-                {time: "14:20 - 15:00", lesson: "TDB", teacher: "Mehmet Yavuz"},
-                {time: "15:10 - 15:50", lesson: "TDE", teacher: "Zehra Eriş"},
+                {time: "14:20 - 15:00", lesson: "BİLT", teacher: "Kenan Yılmaz"},
+                {time: "15:10 - 15:50", lesson: "BİLT", teacher: "Kenan Yılmaz"},
             ],
             "Salı": [
-                {time: "08:20 - 09:00", lesson: "MAT", teacher: "Ahmet Güngör"},
-                {time: "09:10 - 09:50", lesson: "MAT", teacher: "Ahmet Güngör"},
-                {time: "10:00 - 10:40", lesson: "RESMÜ", teacher: "Hazal Aydın Bayburi / Dilek Tutar"},
-                {time: "10:50 - 11:30", lesson: "RESMÜ", teacher: "Hazal Aydın Bayburi / Dilek Tutar"},
-                {time: "11:40 - 12:20", lesson: "BİYO1", teacher: "Gülsen Albayrak"},
-                {time: "13:30 - 14:10", lesson: "BİYO1", teacher: "Gülsen Albayrak"},
+                {time: "08:20 - 09:00", lesson: "RESMÜ", teacher: "Dilek Tutar"},
+                {time: "09:10 - 09:50", lesson: "RESMÜ", teacher: "Dilek Tutar"},
+                {time: "10:00 - 10:40", lesson: "BYDİ", teacher: "Ayşegül Polat"},
+                {time: "10:50 - 11:30", lesson: "BYDİ", teacher: "Ayşegül Polat"},
+                {time: "11:40 - 12:20", lesson: "SAĞ", teacher: "Veysel Efe"},
+                {time: "13:30 - 14:10", lesson: "TDE", teacher: "Zehra Eriş"},
                 {time: "14:20 - 15:00", lesson: "İYDAL", teacher: "Hatice Özek"},
                 {time: "15:10 - 15:50", lesson: "İYDAL", teacher: "Hatice Özek"},
             ],
             "Çarşamba": [
-                {time: "08:20 - 09:00", lesson: "BYDİ", teacher: "Ayşegül Polat"},
-                {time: "09:10 - 09:50", lesson: "BYDİ", teacher: "Ayşegül Polat"},
+                {time: "08:20 - 09:00", lesson: "BİYO1", teacher: "Gülsen Albayrak"},
+                {time: "09:10 - 09:50", lesson: "BİYO1", teacher: "Gülsen Albayrak"},
                 {time: "10:00 - 10:40", lesson: "TDE", teacher: "Zehra Eriş"},
                 {time: "10:50 - 11:30", lesson: "TDE", teacher: "Zehra Eriş"},
-                {time: "11:40 - 12:20", lesson: "BİLT", teacher: "Kenan Yılmaz"},
-                {time: "13:30 - 14:10", lesson: "BİLT", teacher: "Kenan Yılmaz"},
+                {time: "11:40 - 12:20", lesson: "MAT", teacher: "Ahmet Güngör"},
+                {time: "13:30 - 14:10", lesson: "MAT", teacher: "Ahmet Güngör"},
                 {time: "14:20 - 15:00", lesson: "DİN", teacher: "Serdar Uçar"},
                 {time: "15:10 - 15:50", lesson: "DİN", teacher: "Serdar Uçar"},
             ],
@@ -1022,7 +1161,7 @@
             "KİM1": {name: "Kimya 1", hours: 2, teacher: "Nazlıcan Erdoğan"},
             "MAT": {name: "Matematik", hours: 6, teacher: "Ahmet Güngör"},
             "REHB": {name: "Rehberlik", hours: 1, teacher: "Ahmet Güngör"},
-            "RESMÜ": {name: "Resim/Müzik", hours: 2, teacher: "Hazal Aydın Bayburi / Dilek Tutar"},
+            "RESMÜ": {name: "Resim/Müzik", hours: 2, teacher: "Dilek Tutar"},
             "SAĞ": {name: "Sağlık Bilgisi ve Trafik Kültürü", hours: 1, teacher: "Veysel Efe"},
             "SNE9": {name: "Sanat Eğitimi", hours: 2, teacher: "Hayriye Uymazsoy"},
             "TAR": {name: "Tarih", hours: 2, teacher: "Ahmet Gönülseven"},
@@ -1048,6 +1187,21 @@
             renderTeachers();
             setupRealtimeListeners();
             updateTodaySchedule();
+            // Populate suggestion lesson select
+            const sugSel = document.getElementById('sugLesson');
+            if(sugSel) {
+                Object.entries(lessonsInfo).forEach(([code, info]) => {
+                    sugSel.innerHTML += `<option value="${code}">${code} - ${info.name}</option>`;
+                });
+            }
+            // Restore saved API key
+            const savedKey = localStorage.getItem('anthropic_key');
+            if(savedKey) {
+                const keyInput = document.getElementById('anthropicKey');
+                if(keyInput) keyInput.value = savedKey;
+            }
+            // Firebase'den API anahtarını yükle
+            loadApiKeyFromFirebase();
         }
 
         function populateLessonSelects() {
@@ -1063,6 +1217,20 @@
 
         // ===================== REALTIME LISTENERS =====================
         function setupRealtimeListeners() {
+            if(!db) {
+                // Firebase bağlı değil — boş durumlar göster
+                renderHomework([]);
+                renderAnnouncements([]);
+                renderNotes([]);
+                renderArchive([]);
+                renderQA([]);
+                renderPolls([]);
+                renderMemories([]);
+                renderSuggestions();
+                updateDashboardCounts();
+                return;
+            }
+
             // Homework
             db.ref('class9d/homework').on('value', (snap) => {
                 const data = snap.val() || {};
@@ -1110,15 +1278,17 @@
                 renderMemories(list);
             });
 
-            // Connection status
+            // Connection status - green dot in header
             db.ref('.info/connected').on('value', (snap) => {
-                const status = document.getElementById('syncStatus');
-                if(snap.val() === true) {
-                    status.className = 'sync-status online';
-                    status.innerHTML = '<i class="fas fa-wifi"></i> <span>Canlı bağlantı</span>';
-                } else {
-                    status.className = 'sync-status offline';
-                    status.innerHTML = '<i class="fas fa-exclamation-triangle"></i> <span>Bağlantı yok</span>';
+                const dot = document.getElementById('connectionDot');
+                if(dot) {
+                    if(snap.val() === true) {
+                        dot.className = 'connection-dot online';
+                        dot.title = 'Canlı bağlantı aktif';
+                    } else {
+                        dot.className = 'connection-dot offline';
+                        dot.title = 'Bağlantı yok';
+                    }
                 }
             });
         }
@@ -1141,7 +1311,8 @@
                 announcements: 'Duyuru Paneli 📢',
                 polls: 'Sınıf Anketleri 🗳️',
                 memories: 'Sınıf Anıları 📸',
-                chatbot: 'Sınıf Asistanı 🤖',
+                chatbot: 'AI Asistan 🤖',
+                suggestions: 'Kitap & Kaynak Önerileri 💡',
                 teachers: 'Öğretmenlerimiz 👨‍🏫'
             };
             document.getElementById('page-title').textContent = titles[id] || '9-D Portal';
@@ -1219,6 +1390,7 @@
         }
 
         function updateDashboardCounts() {
+            if(!db) return;
             db.ref('class9d/homework').once('value', (snap) => {
                 const data = snap.val() || {};
                 const list = Object.values(data);
@@ -1290,6 +1462,7 @@
 
         function saveHomework(e) {
             e.preventDefault();
+            if(!db){alert('Firebase yapılandırması eksik. Config dosyasını doldurun.');return;}
             const newRef = db.ref('class9d/homework').push();
             newRef.set({
                 title: document.getElementById('hwTitle').value,
@@ -1305,6 +1478,7 @@
 
         function deleteHomework(id) {
             if(confirm('Silmek istediğinize emin misiniz?')) {
+                if(!db){alert('Firebase bağlı değil.');return;}
                 db.ref('class9d/homework/' + id).remove();
             }
         }
@@ -1335,6 +1509,7 @@
 
         function saveAnnouncement(e) {
             e.preventDefault();
+            if(!db){alert('Firebase yapılandırması eksik. Config dosyasını doldurun.');return;}
             const newRef = db.ref('class9d/announcements').push();
             newRef.set({
                 title: document.getElementById('annTitle').value,
@@ -1348,6 +1523,7 @@
 
         function deleteAnnouncement(id) {
             if(confirm('Silmek istediğinize emin misiniz?')) {
+                if(!db){alert('Firebase bağlı değil.');return;}
                 db.ref('class9d/announcements/' + id).remove();
             }
         }
@@ -1383,7 +1559,8 @@
             e.preventDefault();
             const fileInput = document.getElementById('noteFile');
             const saveData = (fileData) => {
-                const newRef = db.ref('class9d/notes').push();
+                if(!db){alert('Firebase yapılandırması eksik. Config dosyasını doldurun.');return;}
+            const newRef = db.ref('class9d/notes').push();
                 newRef.set({
                     title: document.getElementById('noteTitle').value,
                     lesson: document.getElementById('noteLesson').value,
@@ -1405,6 +1582,7 @@
 
         function deleteNote(id) {
             if(confirm('Silmek istediğinize emin misiniz?')) {
+                if(!db){alert('Firebase bağlı değil.');return;}
                 db.ref('class9d/notes/' + id).remove();
             }
         }
@@ -1452,6 +1630,7 @@
 
         function saveQuestion(e) {
             e.preventDefault();
+            if(!db){alert('Firebase yapılandırması eksik. Config dosyasını doldurun.');return;}
             const newRef = db.ref('class9d/questions').push();
             newRef.set({
                 title: document.getElementById('qTitle').value,
@@ -1466,6 +1645,7 @@
 
         function deleteQuestion(id) {
             if(confirm('Silmek istediğinize emin misiniz?')) {
+                if(!db){alert('Firebase bağlı değil.');return;}
                 db.ref('class9d/questions/' + id).remove();
             }
         }
@@ -1493,6 +1673,8 @@
 
         function saveAnswer(e) {
             e.preventDefault();
+            if(!db){alert('Firebase yapılandırması eksik. Config dosyasını doldurun.');return;}
+            if(!db){alert('Firebase yapılandırması eksik.');return;}
             const newRef = db.ref('class9d/questions/' + currentAnswerId + '/answers').push();
             newRef.set({
                 author: document.getElementById('ansAuthor').value,
@@ -1539,6 +1721,7 @@
             e.preventDefault();
             const options = document.getElementById('pollOptions').value.split('\n').filter(o => o.trim()).map(o => ({text: o.trim(), votes: 0}));
             if(options.length < 2) { alert('En az 2 seçenek girmelisiniz!'); return; }
+            if(!db){alert('Firebase yapılandırması eksik. Config dosyasını doldurun.');return;}
             const newRef = db.ref('class9d/polls').push();
             newRef.set({
                 question: document.getElementById('pollQuestion').value,
@@ -1550,6 +1733,7 @@
         }
 
         function votePoll(id, oIdx) {
+            if(!db){alert('Firebase bağlı değil.');return;}
             db.ref('class9d/polls/' + id + '/options/' + oIdx + '/votes').transaction((current) => {
                 return (current || 0) + 1;
             });
@@ -1557,6 +1741,8 @@
 
         function deletePoll(id) {
             if(confirm('Silmek istediğinize emin misiniz?')) {
+                if(!db){alert('Firebase bağlı değil.');return;}
+                if(!db){alert('Firebase bağlı değil.');return;}
                 db.ref('class9d/polls/' + id).remove();
             }
         }
@@ -1588,7 +1774,8 @@
             if(!fileInput.files[0]) return;
             const reader = new FileReader();
             reader.onload = (ev) => {
-                const newRef = db.ref('class9d/memories').push();
+                if(!db){alert('Firebase yapılandırması eksik. Config dosyasını doldurun.');return;}
+            const newRef = db.ref('class9d/memories').push();
                 newRef.set({
                     desc: document.getElementById('memDesc').value,
                     fileData: ev.target.result,
@@ -1602,6 +1789,7 @@
 
         function deleteMemory(id) {
             if(confirm('Silmek istediğinize emin misiniz?')) {
+                if(!db){alert('Firebase bağlı değil.');return;}
                 db.ref('class9d/memories/' + id).remove();
             }
         }
@@ -1653,17 +1841,151 @@
             document.getElementById('archiveFiles').style.display = 'none';
         }
 
-        // ===================== CHATBOT =====================
-        function sendChat() {
+        // ===================== AI CHATBOT (Google Gemini) =====================
+        let chatHistory = [];   // {role: 'user'|'model', parts: [{text}]}
+        let activeApiKey = '';  // Firebase'den çekilen Gemini anahtarı
+
+        // API anahtarını Firebase'den yükle
+        function loadApiKeyFromFirebase() {
+            if(!db) { setAiStatus('firebase-missing'); return; }
+            db.ref('class9d/config/geminiKey').once('value', (snap) => {
+                const key = snap.val();
+                if(key && key.startsWith('AIza')) {
+                    activeApiKey = key;
+                    setAiStatus('ready');
+                } else {
+                    setAiStatus('no-key');
+                }
+            });
+        }
+
+        function setAiStatus(state) {
+            const bar = document.getElementById('aiStatusBar');
+            const text = document.getElementById('aiStatusText');
+            if(!bar || !text) return;
+            if(state === 'ready') {
+                bar.style.background = 'rgba(16,185,129,0.1)';
+                bar.style.borderColor = 'rgba(16,185,129,0.3)';
+                text.innerHTML = '<i class="fas fa-check-circle" style="color:var(--success);margin-right:6px"></i>Yapay zeka (Gemini) hazır! Sorunuzu yazabilirsiniz.';
+            } else if(state === 'no-key') {
+                bar.style.background = 'rgba(245,158,11,0.1)';
+                bar.style.borderColor = 'rgba(245,158,11,0.3)';
+                text.innerHTML = '<i class="fas fa-exclamation-triangle" style="color:var(--warning);margin-right:6px"></i>Gemini API anahtarı girilmemiş. Sağ alttaki <strong>"Admin: API Anahtarı"</strong> butonuna tıklayın.';
+            } else if(state === 'firebase-missing') {
+                bar.style.background = 'rgba(239,68,68,0.1)';
+                bar.style.borderColor = 'rgba(239,68,68,0.3)';
+                text.innerHTML = '<i class="fas fa-times-circle" style="color:var(--danger);margin-right:6px"></i>Firebase bağlı değil. Önce Firebase config\'i doldurun, ardından API anahtarını bir kez girin.';
+            }
+        }
+
+        function toggleAdminKeyPanel() {
+            const panel = document.getElementById('adminKeyPanel');
+            panel.style.display = panel.style.display === 'none' ? 'block' : 'none';
+        }
+
+        function saveApiKeyToFirebase() {
+            const key = document.getElementById('adminKeyInput').value.trim();
+            if(!key.startsWith('AIza')) {
+                alert('Geçersiz anahtar! Gemini anahtarları "AIza" ile başlar.\nÖrnek: AIzaSy...');
+                return;
+            }
+            if(!db) { alert('Firebase bağlı değil.'); return; }
+            db.ref('class9d/config/geminiKey').set(key, (err) => {
+                if(err) {
+                    alert('Kayıt başarısız: ' + err.message);
+                } else {
+                    activeApiKey = key;
+                    setAiStatus('ready');
+                    document.getElementById('adminKeyPanel').style.display = 'none';
+                    document.getElementById('adminKeyInput').value = '';
+                    addChatMessage('✅ Gemini API anahtarı Firebase\'e kaydedildi! Artık tüm cihazlarda otomatik çalışacak.', 'bot');
+                }
+            });
+        }
+
+        function buildSystemPrompt() {
+            const today = days[new Date().getDay()];
+            const todaySchedule = scheduleData[today]
+                ? scheduleData[today].map(l => `  ${l.time}: ${l.lesson} (${l.teacher})`).join('\n')
+                : 'Bugün tatil.';
+            const allTeachers = Object.entries(lessonsInfo)
+                .map(([code, info]) => `  ${code} (${info.name}): ${info.teacher} — haftada ${info.hours} saat`)
+                .join('\n');
+            const fullSchedule = Object.entries(scheduleData).map(([day, lessons]) =>
+                `${day}:\n` + lessons.map(l => `  ${l.time}: ${l.lesson} (${l.teacher})`).join('\n')
+            ).join('\n\n');
+            return `Sen Isparta Süleyman Demirel Fen Lisesi 9-D sınıfının yapay zeka asistanısın.
+Sınıf öğretmeni: Ahmet Güngör. Bugün: ${today}.
+
+HAFTALIK DERS PROGRAMI:
+${fullSchedule}
+
+ÖĞRETMENLER:
+${allTeachers}
+
+BUGÜNKÜ DERSLER:
+${todaySchedule}
+
+Kısa, sıcak ve yardımcı cevaplar ver. Emoji kullanabilirsin. Yalnızca Türkçe konuş. Bilmiyorsan dürüstçe söyle.`;
+        }
+
+        async function sendChat() {
             const input = document.getElementById('chatInput');
             const msg = input.value.trim();
             if(!msg) return;
+            if(!activeApiKey) {
+                addChatMessage('⚠️ Yapay zeka henüz hazır değil. Admin\'in API anahtarını girmesi gerekiyor.', 'bot');
+                return;
+            }
+
             addChatMessage(msg, 'user');
             input.value = '';
-            setTimeout(() => {
-                const reply = getBotReply(msg);
-                addChatMessage(reply, 'bot');
-            }, 500);
+            // Gemini formatı: role = 'user' | 'model'
+            chatHistory.push({ role: 'user', parts: [{ text: msg }] });
+
+            // Yazıyor göstergesi
+            const typingId = 'typing-' + Date.now();
+            const container = document.getElementById('chatMessages');
+            const typingDiv = document.createElement('div');
+            typingDiv.className = 'chat-message bot';
+            typingDiv.id = typingId;
+            typingDiv.innerHTML = '<div class="ai-typing"><span></span><span></span><span></span></div>';
+            container.appendChild(typingDiv);
+            container.scrollTop = container.scrollHeight;
+
+            try {
+                const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${activeApiKey}`;
+                const response = await fetch(url, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        systemInstruction: { parts: [{ text: buildSystemPrompt() }] },
+                        contents: chatHistory.slice(-12),
+                        generationConfig: { maxOutputTokens: 600, temperature: 0.7 }
+                    })
+                });
+                const data = await response.json();
+                document.getElementById(typingId)?.remove();
+
+                if(data.candidates && data.candidates[0]?.content?.parts?.[0]?.text) {
+                    const reply = data.candidates[0].content.parts[0].text;
+                    chatHistory.push({ role: 'model', parts: [{ text: reply }] });
+                    addChatMessage(reply, 'bot');
+                } else if(data.error) {
+                    const errMsg = data.error.message || 'Bilinmeyen hata';
+                    if(data.error.code === 400 && errMsg.includes('API_KEY')) {
+                        addChatMessage('❌ Geçersiz API anahtarı. Lütfen anahtarı kontrol edin.', 'bot');
+                        setAiStatus('no-key');
+                    } else {
+                        addChatMessage('Hata: ' + errMsg, 'bot');
+                    }
+                } else {
+                    addChatMessage('⚠️ Beklenmeyen yanıt. Lütfen tekrar deneyin.', 'bot');
+                }
+            } catch(err) {
+                document.getElementById(typingId)?.remove();
+                addChatMessage('❌ Bağlantı hatası. İnternet bağlantınızı kontrol edin.', 'bot');
+            }
         }
 
         function quickChat(msg) {
@@ -1675,71 +1997,81 @@
             const container = document.getElementById('chatMessages');
             const div = document.createElement('div');
             div.className = `chat-message ${sender}`;
-            div.innerHTML = text;
+            div.innerHTML = text.replace(/\n/g, '<br>');
             container.appendChild(div);
             container.scrollTop = container.scrollHeight;
         }
 
-        function getBotReply(msg) {
-            const lower = msg.toLowerCase();
-            const today = days[new Date().getDay()];
-            const tomorrow = days[(new Date().getDay() + 1) % 7];
+        // ===================== SUGGESTIONS =====================
+        let allSuggestions = [];
+        let currentFilter = 'tümü';
 
-            if(lower.includes('yarın') && lower.includes('ders')) {
-                if(tomorrow === 'Cumartesi' || tomorrow === 'Pazar') return '🎉 Yarın tatil! Ders yok.';
-                const lessons = scheduleData[tomorrow];
-                return `<strong>Yarınki (${tomorrow}) dersleriniz:</strong><br>` + 
-                    lessons.map(l => `• ${l.time}: <strong>${l.lesson}</strong> (${l.teacher})`).join('<br>');
-            }
-            if((lower.includes('bugün') || lower.includes('bugunkü')) && lower.includes('ders')) {
-                const lessons = scheduleData[today];
-                if(!lessons) return '🎉 Bugün tatil!';
-                return `<strong>Bugünkü (${today}) dersleriniz:</strong><br>` + 
-                    lessons.map(l => `• ${l.time}: <strong>${l.lesson}</strong> (${l.teacher})`).join('<br>');
-            }
-            if(lower.includes('ders programı') || lower.includes('haftalık')) {
-                return 'Ders programını sol menüden "Ders Programı" bölümünden görüntüleyebilirsiniz. 📅';
-            }
+        function setupSuggestionsListener() {
+            if(!db) { renderSuggestions(); return; }
+            db.ref('class9d/suggestions').on('value', (snap) => {
+                const data = snap.val() || {};
+                allSuggestions = Object.entries(data).map(([id, val]) => ({id, ...val})).reverse();
+                renderSuggestions();
+            });
+        }
 
-            const teacherMatches = {
-                'mat': 'MAT', 'matematik': 'MAT',
-                'fizik': 'FİZ1', 'fiz': 'FİZ1',
-                'kimya': 'KİM1', 'kim': 'KİM1',
-                'biyoloji': 'BİYO1', 'biyo': 'BİYO1',
-                'tarih': 'TAR', 'tar': 'TAR',
-                'coğrafya': 'COĞ', 'coğ': 'COĞ',
-                'ingilizce': 'BYDİ', 'byd': 'BYDİ', 'ing': 'BYDİ',
-                'almanca': 'İYDAL', 'alm': 'İYDAL', 'iydal': 'İYDAL',
-                'edebiyat': 'TDE', 'tde': 'TDE', 'türkçe': 'TDE',
-                'din': 'DİN', 'dkab': 'DİN',
-                'beden': 'BED', 'bed': 'BED',
-                'bilişim': 'BİLT', 'bilt': 'BİLT', 'bt': 'BİLT',
-                'resim': 'RESMÜ', 'resmü': 'RESMÜ', 'müzik': 'RESMÜ',
-                'sağlık': 'SAĞ', 'sağ': 'SAĞ',
-                'sanat': 'SNE9', 'sne': 'SNE9',
-                'tdb': 'TDB', 'rehberlik': 'REHB', 'rehb': 'REHB'
-            };
-            for(let key in teacherMatches) {
-                if(lower.includes(key) && (lower.includes('öğretmen') || lower.includes('hoc') || lower.includes('kim'))) {
-                    const code = teacherMatches[key];
-                    const info = lessonsInfo[code];
-                    return `<strong>${info.name}</strong> öğretmeniniz <strong>${info.teacher}</strong>. Haftada ${info.hours} saat dersi var.`;
-                }
-            }
-            if(lower.includes('öğretmen') || lower.includes('hoca')) {
-                return 'Tüm öğretmenlerinizi sol menüden "Öğretmenlerimiz" bölümünde listeleyebilirsiniz. 👨‍🏫';
-            }
+        function filterSuggestions(type, btn) {
+            currentFilter = type;
+            document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            renderSuggestions();
+        }
 
-            if(lower.includes('ödev') || lower.includes('sınav') || lower.includes('yazılı')) {
-                return 'Ödev ve sınavları "Ödev & Sınav" bölümünden görüntüleyebilirsiniz. 📚';
+        function renderSuggestions() {
+            const list = document.getElementById('suggestionsList');
+            const filtered = currentFilter === 'tümü' ? allSuggestions : allSuggestions.filter(s => s.type === currentFilter);
+            if(filtered.length === 0) {
+                list.innerHTML = '<div class="empty-state"><i class="fas fa-book-open"></i><h3>Henüz öneri yok</h3><p>İlk öneriyi sen yap!</p></div>';
+                return;
             }
+            const typeIcons = {test: '📝', okuma: '📖', kaynak: '📘'};
+            const typeLabels = {test: 'Test Kitabı', okuma: 'Okuma Kitabı', kaynak: 'Kaynak Kitap'};
+            list.innerHTML = filtered.map(s => `
+                <div class="suggestion-card">
+                    <div class="suggestion-book-icon ${s.type}">${typeIcons[s.type] || '📚'}</div>
+                    <div class="suggestion-body">
+                        <div class="suggestion-title">${s.title}</div>
+                        <div class="suggestion-meta">
+                            <span><i class="fas fa-tag"></i> ${typeLabels[s.type] || s.type}</span>
+                            ${s.lesson ? `<span><i class="fas fa-book"></i> ${s.lesson}</span>` : ''}
+                            <span><i class="fas fa-user"></i> ${s.author}</span>
+                            <span><i class="fas fa-calendar"></i> ${new Date(s.date).toLocaleDateString('tr-TR')}</span>
+                        </div>
+                        <div class="suggestion-comment">"${s.comment}"</div>
+                    </div>
+                    <button class="btn btn-danger btn-sm" onclick="deleteSuggestion('${s.id}')" style="flex-shrink:0"><i class="fas fa-trash"></i></button>
+                </div>
+            `).join('');
+        }
 
-            if(lower.includes('merhaba') || lower.includes('selam')) return 'Merhaba! 👋 Size nasıl yardımcı olabilirim?';
-            if(lower.includes('nasılsın')) return 'Teşekkürler, ben bir yapay zekayım ama sizin için buradayım! 😊';
-            if(lower.includes('teşekkür')) return 'Rica ederim! Başka bir sorunuz olursa buradayım. 🎓';
-            if(lower.includes('okul') && lower.includes('adı')) return 'Süleyman Demirel Fen Lisesi, Isparta. Sınıf: 9-D, Sınıf Öğretmeni: Ahmet Güngör.';
+        function saveSuggestion(e) {
+            e.preventDefault();
+            if(!db){alert('Firebase yapılandırması eksik. Config dosyasını doldurun.');return;}
+            const newRef = db.ref('class9d/suggestions').push();
+            newRef.set({
+                title: document.getElementById('sugTitle').value,
+                type: document.getElementById('sugType').value,
+                lesson: document.getElementById('sugLesson').value,
+                comment: document.getElementById('sugComment').value,
+                author: document.getElementById('sugAuthor').value,
+                date: new Date().toISOString()
+            });
+            closeModal('suggestionModal');
+            e.target.reset();
+        }
 
-            return 'Bu konuda tam emin değilim. 🤔 Ders programı, öğretmenler, ödevler veya sınavlar hakkında soru sorabilirsiniz.';
+        function deleteSuggestion(id) {
+            if(confirm('Bu öneriyi silmek istediğinize emin misiniz?')) {
+                if(!db){alert('Firebase bağlı değil.');return;}
+                db.ref('class9d/suggestions/' + id).remove();
+            }
+            // Suggestions
+            setupSuggestionsListener();
         }
 
         // ===================== TEACHERS =====================
