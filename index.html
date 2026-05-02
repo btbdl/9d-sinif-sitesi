@@ -9,8 +9,6 @@
     <!-- Firebase v8 (Compat) - Global namespace'de çalışır, mevcut kodu bozmaz -->
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
-    <!-- Puter.js - API key gerektirmeyen ücretsiz yapay zeka -->
-    <script src="https://js.puter.com/v2/"></script>
     <style>
         :root {
             --primary: #6366f1;
@@ -882,9 +880,38 @@
                 <div class="section-title"><i class="fas fa-robot"></i> AI Asistan</div>
                 <p style="color: var(--text-muted); margin-bottom: 1rem;">Ders programı, öğretmenler ve dersler hakkında sorularınızı yapay zekaya sorun! 🤖</p>
 
-                <div style="background: rgba(16,185,129,0.08); border: 1px solid rgba(16,185,129,0.25); border-radius: 12px; padding: 0.875rem 1.25rem; margin-bottom: 1.5rem; font-size: 0.85rem; color: var(--text-muted); display:flex; align-items:center; gap:0.75rem; flex-wrap:wrap;">
-                    <i class="fas fa-check-circle" style="color:var(--success); font-size:1.1rem; flex-shrink:0;"></i>
-                    <span><strong style="color:var(--text);">Gemini 3 Flash</strong> — API anahtarı gerekmez, tamamen ücretsiz, kayıt gerektirmez. Puter.js altyapısıyla çalışır.</span>
+                <div id="aiStatusBar" style="background: rgba(245,158,11,0.1); border: 1px solid rgba(245,158,11,0.3); border-radius: 12px; padding: 0.875rem 1.25rem; margin-bottom: 1.5rem; font-size: 0.85rem; color: var(--text-muted);">
+                    <i class="fas fa-spinner fa-spin" style="color: var(--warning); margin-right: 6px;"></i>
+                    <span id="aiStatusText">Yapay zeka hazırlanıyor...</span>
+                </div>
+
+                <div id="adminKeyPanel" style="display:none; background: rgba(66,133,244,0.08); border: 1px solid rgba(66,133,244,0.3); border-radius: 16px; padding: 1.25rem 1.5rem; margin-bottom: 1.5rem;">
+                    <div style="font-weight:700; margin-bottom:1rem; font-size:1rem; display:flex; align-items:center; gap:0.5rem;">
+                        <i class="fas fa-key" style="color:#4285f4"></i> Google Gemini API Anahtarı
+                    </div>
+                    <div style="background:var(--surface); border-radius:12px; padding:1rem; margin-bottom:1rem; font-size:0.82rem; line-height:1.8;">
+                        <div style="font-weight:700; margin-bottom:0.5rem; color:var(--text);">📋 Anahtarı nasıl alacaksınız?</div>
+                        <div><span style="background:#4285f4; color:white; border-radius:50%; width:18px; height:18px; display:inline-flex; align-items:center; justify-content:center; font-size:0.7rem; font-weight:700; margin-right:6px;">1</span>
+                            <a href="https://aistudio.google.com/apikey" target="_blank" style="color:#4285f4; font-weight:600;">aistudio.google.com/apikey</a> adresine gidin</div>
+                        <div style="margin-top:4px;"><span style="background:#4285f4; color:white; border-radius:50%; width:18px; height:18px; display:inline-flex; align-items:center; justify-content:center; font-size:0.7rem; font-weight:700; margin-right:6px;">2</span>
+                            Gmail hesabınızla giriş yapın</div>
+                        <div style="margin-top:4px;"><span style="background:#4285f4; color:white; border-radius:50%; width:18px; height:18px; display:inline-flex; align-items:center; justify-content:center; font-size:0.7rem; font-weight:700; margin-right:6px;">3</span>
+                            <strong>"Create API Key"</strong> butonuna tıklayın</div>
+                        <div style="margin-top:4px;"><span style="background:#4285f4; color:white; border-radius:50%; width:18px; height:18px; display:inline-flex; align-items:center; justify-content:center; font-size:0.7rem; font-weight:700; margin-right:6px;">4</span>
+                            <strong>"AIzaSy..."</strong> ile başlayan anahtarı kopyalayın</div>
+                        <div style="margin-top:4px;"><span style="background:#4285f4; color:white; border-radius:50%; width:18px; height:18px; display:inline-flex; align-items:center; justify-content:center; font-size:0.7rem; font-weight:700; margin-right:6px;">5</span>
+                            Aşağıya yapıştırıp <strong>"Firebase'e Kaydet"</strong> deyin</div>
+                    </div>
+                    <div style="display:flex; gap:0.5rem; flex-wrap:wrap; align-items:center;">
+                        <input type="password" id="adminKeyInput" placeholder="AIzaSy..."
+                            style="background:var(--surface); border:1px solid var(--border); border-radius:8px; padding:0.5rem 0.85rem; color:var(--text); font-size:0.9rem; flex:1; min-width:220px; font-family:monospace; letter-spacing:0.5px;">
+                        <button class="btn btn-primary btn-sm" onclick="saveApiKeyToFirebase()"><i class="fas fa-cloud-upload-alt"></i> Firebase'e Kaydet</button>
+                        <button class="btn btn-secondary btn-sm" onclick="document.getElementById('adminKeyPanel').style.display='none'">İptal</button>
+                    </div>
+                    <small style="display:block; margin-top:0.6rem; color:var(--text-muted); font-size:0.78rem;">
+                        <i class="fas fa-shield-alt" style="color:var(--success)"></i>
+                        Anahtar Firebase'e kaydedilir. <strong>Bir kez girilince tüm cihazlarda otomatik çalışır.</strong>
+                    </small>
                 </div>
                 <div class="chat-container">
                     <div class="chat-messages" id="chatMessages">
@@ -895,14 +922,19 @@
                         <button class="btn btn-primary" onclick="sendChat()"><i class="fas fa-paper-plane"></i></button>
                     </div>
                 </div>
-                <div style="margin-top: 1.5rem;">
-                    <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 0.75rem;"><strong>Örnek Sorular:</strong></p>
-                    <div style="display: flex; flex-wrap: wrap; gap: 0.5rem;">
-                        <button class="btn btn-secondary btn-sm" onclick="quickChat('Yarın hangi dersler var?')">Yarın hangi dersler var?</button>
-                        <button class="btn btn-secondary btn-sm" onclick="quickChat('Fizik öğretmeni kim?')">Fizik öğretmeni kim?</button>
-                        <button class="btn btn-secondary btn-sm" onclick="quickChat('Bu hafta kaç saat matematik var?')">Kaç saat matematik var?</button>
-                        <button class="btn btn-secondary btn-sm" onclick="quickChat('Almanca öğretmeni kim?')">Almanca öğretmeni kim?</button>
+                <div style="margin-top: 1.5rem; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:0.75rem;">
+                    <div>
+                        <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 0.75rem;"><strong>Örnek Sorular:</strong></p>
+                        <div style="display: flex; flex-wrap: wrap; gap: 0.5rem;">
+                            <button class="btn btn-secondary btn-sm" onclick="quickChat('Yarın hangi dersler var?')">Yarın hangi dersler var?</button>
+                            <button class="btn btn-secondary btn-sm" onclick="quickChat('Fizik öğretmeni kim?')">Fizik öğretmeni kim?</button>
+                            <button class="btn btn-secondary btn-sm" onclick="quickChat('Bu hafta kaç saat matematik var?')">Kaç saat matematik var?</button>
+                            <button class="btn btn-secondary btn-sm" onclick="quickChat('Almanca öğretmeni kim?')">Almanca öğretmeni kim?</button>
+                        </div>
                     </div>
+                    <button class="btn btn-secondary btn-sm" onclick="toggleAdminKeyPanel()" style="white-space:nowrap;">
+                        <i class="fas fa-key"></i> Admin: API Anahtarı
+                    </button>
                 </div>
             </section>
 
@@ -1034,7 +1066,7 @@
         // Adım 2: Realtime Database oluştur (test modunda başlat)
         // Adım 3: Proje ayarlarından config bilgilerini kopyala
         const firebaseConfig = {
-             apiKey: "AIzaSyCRInzdm-7V9vfpTf_1p-WuXtEmb_CK0g0",
+            apiKey: "AIzaSyCRInzdm-7V9vfpTf_1p-WuXtEmb_CK0g0",
             authDomain: "dsite-2b9a9.firebaseapp.com",
             databaseURL: "https://dsite-2b9a9-default-rtdb.europe-west1.firebasedatabase.app",
             projectId: "dsite-2b9a9",
@@ -1156,12 +1188,8 @@
                     sugSel.innerHTML += `<option value="${code}">${code} - ${info.name}</option>`;
                 });
             }
-            // Restore saved API key
-            const savedKey = localStorage.getItem('anthropic_key');
-            if(savedKey) {
-                const keyInput = document.getElementById('anthropicKey');
-                if(keyInput) keyInput.value = savedKey;
-            }
+            // Firebase'den Gemini API anahtarını yükle
+            loadApiKeyFromFirebase();
         }
 
         function populateLessonSelects() {
@@ -1801,8 +1829,66 @@
             document.getElementById('archiveFiles').style.display = 'none';
         }
 
-        // ===================== AI CHATBOT (Puter.js - API key gerektirmez) =====================
-        let chatHistory = []; // [{role:'user'|'assistant', content:'...'}]
+        // ===================== AI CHATBOT (Google Gemini 2.5 Flash) =====================
+        let chatHistory = [];  // {role:'user'|'model', parts:[{text}]}
+        let activeApiKey = ''; // Firebase'den çekilen Gemini anahtarı
+
+        function loadApiKeyFromFirebase() {
+            if(!db) { setAiStatus('firebase-missing'); return; }
+            db.ref('class9d/config/geminiKey').once('value', (snap) => {
+                const key = snap.val();
+                if(key && key.startsWith('AIza')) {
+                    activeApiKey = key;
+                    setAiStatus('ready');
+                } else {
+                    setAiStatus('no-key');
+                }
+            });
+        }
+
+        function setAiStatus(state) {
+            const bar = document.getElementById('aiStatusBar');
+            const text = document.getElementById('aiStatusText');
+            if(!bar || !text) return;
+            if(state === 'ready') {
+                bar.style.background = 'rgba(16,185,129,0.1)';
+                bar.style.borderColor = 'rgba(16,185,129,0.3)';
+                text.innerHTML = '<i class="fas fa-check-circle" style="color:var(--success);margin-right:6px"></i>Yapay zeka (Gemini 2.5 Flash) hazır! Sorunuzu yazabilirsiniz.';
+            } else if(state === 'no-key') {
+                bar.style.background = 'rgba(245,158,11,0.1)';
+                bar.style.borderColor = 'rgba(245,158,11,0.3)';
+                text.innerHTML = '<i class="fas fa-exclamation-triangle" style="color:var(--warning);margin-right:6px"></i>API anahtarı girilmemiş. Sağ alttaki <strong>"Admin: API Anahtarı"</strong> butonuna tıklayın.';
+            } else if(state === 'firebase-missing') {
+                bar.style.background = 'rgba(239,68,68,0.1)';
+                bar.style.borderColor = 'rgba(239,68,68,0.3)';
+                text.innerHTML = '<i class="fas fa-times-circle" style="color:var(--danger);margin-right:6px"></i>Firebase bağlı değil. Önce Firebase config\'i doldurun, ardından API anahtarını bir kez girin.';
+            }
+        }
+
+        function toggleAdminKeyPanel() {
+            const panel = document.getElementById('adminKeyPanel');
+            panel.style.display = panel.style.display === 'none' ? 'block' : 'none';
+        }
+
+        function saveApiKeyToFirebase() {
+            const key = document.getElementById('adminKeyInput').value.trim();
+            if(!key.startsWith('AIza')) {
+                alert('Geçersiz anahtar! Gemini anahtarları "AIza" ile başlar.\nÖrnek: AIzaSy...');
+                return;
+            }
+            if(!db) { alert('Firebase bağlı değil.'); return; }
+            db.ref('class9d/config/geminiKey').set(key, (err) => {
+                if(err) {
+                    alert('Kayıt başarısız: ' + err.message);
+                } else {
+                    activeApiKey = key;
+                    setAiStatus('ready');
+                    document.getElementById('adminKeyPanel').style.display = 'none';
+                    document.getElementById('adminKeyInput').value = '';
+                    addChatMessage('✅ Gemini API anahtarı Firebase\'e kaydedildi! Artık tüm cihazlarda otomatik çalışacak.', 'bot');
+                }
+            });
+        }
 
         function buildSystemPrompt() {
             const today = days[new Date().getDay()];
@@ -1833,11 +1919,15 @@ Kısa, sıcak ve yardımcı cevaplar ver. Emoji kullanabilirsin. Yalnızca Türk
         async function sendChat() {
             const input = document.getElementById('chatInput');
             const msg = input.value.trim();
-            if (!msg) return;
+            if(!msg) return;
+            if(!activeApiKey) {
+                addChatMessage('⚠️ Yapay zeka henüz hazır değil. Sağ alttaki "Admin: API Anahtarı" butonuna tıklayarak anahtarı girin.', 'bot');
+                return;
+            }
 
             addChatMessage(msg, 'user');
             input.value = '';
-            chatHistory.push({ role: 'user', content: msg });
+            chatHistory.push({ role: 'user', parts: [{ text: msg }] });
 
             // Yazıyor göstergesi
             const typingId = 'typing-' + Date.now();
@@ -1850,39 +1940,31 @@ Kısa, sıcak ve yardımcı cevaplar ver. Emoji kullanabilirsin. Yalnızca Türk
             container.scrollTop = container.scrollHeight;
 
             try {
-                // Puter.js: sistem mesajı + geçmiş
-                const messages = [
-                    { role: 'system', content: buildSystemPrompt() },
-                    ...chatHistory.slice(-10)
-                ];
-
-                const response = await puter.ai.chat(messages, {
-                    model: 'gemini-3-flash-preview'
+                const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${activeApiKey}`;
+                const response = await fetch(url, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        systemInstruction: { parts: [{ text: buildSystemPrompt() }] },
+                        contents: chatHistory.slice(-12),
+                        generationConfig: { maxOutputTokens: 600, temperature: 0.7 }
+                    })
                 });
-
+                const data = await response.json();
                 document.getElementById(typingId)?.remove();
 
-                // Puter.js yanıt formatı: string veya nesne
-                let reply = '';
-                if (typeof response === 'string') {
-                    reply = response;
-                } else if (response?.message?.content) {
-                    reply = Array.isArray(response.message.content)
-                        ? response.message.content[0]?.text || ''
-                        : response.message.content;
-                } else if (response?.text) {
-                    reply = response.text;
+                if(data.candidates && data.candidates[0]?.content?.parts?.[0]?.text) {
+                    const reply = data.candidates[0].content.parts[0].text;
+                    chatHistory.push({ role: 'model', parts: [{ text: reply }] });
+                    addChatMessage(reply, 'bot');
+                } else if(data.error) {
+                    addChatMessage('❌ Hata: ' + (data.error.message || 'Bilinmeyen hata'), 'bot');
                 } else {
-                    reply = '⚠️ Yanıt alınamadı, lütfen tekrar deneyin.';
+                    addChatMessage('⚠️ Beklenmeyen yanıt. Lütfen tekrar deneyin.', 'bot');
                 }
-
-                chatHistory.push({ role: 'assistant', content: reply });
-                addChatMessage(reply, 'bot');
-
-            } catch (err) {
+            } catch(err) {
                 document.getElementById(typingId)?.remove();
-                console.error('Puter.js AI hatası:', err);
-                addChatMessage('❌ Bir hata oluştu: ' + (err.message || 'Lütfen tekrar deneyin.'), 'bot');
+                addChatMessage('❌ Bağlantı hatası. İnternet bağlantınızı kontrol edin.', 'bot');
             }
         }
 
