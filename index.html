@@ -1112,7 +1112,7 @@
                             <div style="font-size:0.82rem;color:var(--text-muted);">eba.gov.tr &nbsp;<i class="fas fa-external-link-alt" style="font-size:0.7rem;"></i></div>
                         </div>
                     </a>
-                    <a href="https://www.meb.gov.tr/e-okul/" target="_blank" style="text-decoration:none;">
+                    <a href="https://e-okul.meb.gov.tr" target="_blank" style="text-decoration:none;">
                         <div class="card" style="cursor:pointer; transition:all 0.2s;" onmouseover="this.style.borderColor='var(--success)'" onmouseout="this.style.borderColor=''">
                             <div class="card-header">
                                 <div>
@@ -1136,40 +1136,17 @@
                             <div style="font-size:0.82rem;color:var(--text-muted);">turkiye.gov.tr &nbsp;<i class="fas fa-external-link-alt" style="font-size:0.7rem;"></i></div>
                         </div>
                     </a>
-                    <a href="https://mebbis.meb.gov.tr" target="_blank" style="text-decoration:none;">
-                        <div class="card" style="cursor:pointer; transition:all 0.2s;" onmouseover="this.style.borderColor='var(--secondary)'" onmouseout="this.style.borderColor=''">
-                            <div class="card-header">
-                                <div>
-                                    <div class="card-title">MEBBİS</div>
-                                    <div class="card-desc">MEB Bilgi İşlem Sistemi</div>
-                                </div>
-                                <div class="card-icon icon-pink"><i class="fas fa-database"></i></div>
-                            </div>
-                            <div style="font-size:0.82rem;color:var(--text-muted);">mebbis.meb.gov.tr &nbsp;<i class="fas fa-external-link-alt" style="font-size:0.7rem;"></i></div>
-                        </div>
-                    </a>
-                    <a href="https://www.odsgm.meb.gov.tr/kurslar" target="_blank" style="text-decoration:none;">
+    
+                    <a href="https://www.mebi.meb.gov.tr" target="_blank" style="text-decoration:none;">
                         <div class="card" style="cursor:pointer; transition:all 0.2s;" onmouseover="this.style.borderColor='var(--warning)'" onmouseout="this.style.borderColor=''">
                             <div class="card-header">
                                 <div>
-                                    <div class="card-title">MEB Sınavlar</div>
-                                    <div class="card-desc">LGS, YKS ve sınav bilgileri</div>
+                                    <div class="card-title">MEBİ</div>
+                                    <div class="card-desc">MEB İnsan Kaynakları</div>
                                 </div>
-                                <div class="card-icon icon-orange"><i class="fas fa-file-alt"></i></div>
+                                <div class="card-icon icon-orange"><i class="fas fa-users-cog"></i></div>
                             </div>
-                            <div style="font-size:0.82rem;color:var(--text-muted);">meb.gov.tr &nbsp;<i class="fas fa-external-link-alt" style="font-size:0.7rem;"></i></div>
-                        </div>
-                    </a>
-                    <a href="https://www.osym.gov.tr" target="_blank" style="text-decoration:none;">
-                        <div class="card" style="cursor:pointer; transition:all 0.2s;" onmouseover="this.style.borderColor='var(--primary)'" onmouseout="this.style.borderColor=''">
-                            <div class="card-header">
-                                <div>
-                                    <div class="card-title">ÖSYM</div>
-                                    <div class="card-desc">YKS, TYT, AYT bilgileri</div>
-                                </div>
-                                <div class="card-icon icon-blue"><i class="fas fa-graduation-cap"></i></div>
-                            </div>
-                            <div style="font-size:0.82rem;color:var(--text-muted);">osym.gov.tr &nbsp;<i class="fas fa-external-link-alt" style="font-size:0.7rem;"></i></div>
+                            <div style="font-size:0.82rem;color:var(--text-muted);">mebi.meb.gov.tr &nbsp;<i class="fas fa-external-link-alt" style="font-size:0.7rem;"></i></div>
                         </div>
                     </a>
                 </div>
@@ -1373,10 +1350,10 @@
             'Abdullah Mert Türk', 'Ahmet Eymen Alkaptan', 'Ali Sarp Kaya',
             'Aybüke Demirel', 'Beren Kılıç', 'Berhan Taşkın', 'Betül Akdağ',
             'Beyza Erkut', 'Cennet Aydoğdu', 'Cennet Yağmur Akpınar',
-            'Dilek Tutar', 'Elif Özay', 'Emine İnan', 'Enver Gürel',
+            'Elif Özay', 'Emine İnan', 'Enver Gürel',
             'Etem Faruk Karaca', 'Fatima Zeynep Kahraman', 'Ferhat Ayvaz',
             'Gülsüm Begüm Özdemir', 'Gürol Salih Sağır', 'Halil Göktuğ Aslantaş',
-            'Halise Ceren Uyan', 'Hatice Özek', 'Mete Aydın',
+            'Halise Ceren Uyan', 'Mete Aydın',
             'Muhammed Emir Göksu', 'Osman Sunguralp Kılıç', 'Ömertaha Çelik',
             'Ramazan Emir Kök', 'Sena Kansu', 'Sungur Alp Öztürk',
             'Şerife Selma Dinler', 'Yiğit Kayra Canpolat', 'Zehra Keskin'
@@ -1725,6 +1702,18 @@
                     currentUser = JSON.parse(saved);
                     updateAuthUI();
                     if(currentUser.role === 'admin') setupAdminListeners();
+                    // Oy geçmişini Firebase'den localStorage'a senkronize et
+                    if(db && currentUser) {
+                        db.ref('class9d/pollVoters').once('value', snap => {
+                            const voters = snap.val() || {};
+                            Object.entries(voters).forEach(([pollId, pollVoters]) => {
+                                const vk = 'poll_vote_' + pollId + '_' + currentUser.key;
+                                if(pollVoters[currentUser.key] !== undefined && localStorage.getItem(vk) === null) {
+                                    localStorage.setItem(vk, pollVoters[currentUser.key]);
+                                }
+                            });
+                        });
+                    }
                 }
             } catch(e) { localStorage.removeItem('9d_session'); }
         }
@@ -2370,14 +2359,25 @@
         function votePoll(id, oIdx) {
             if(!db){ alert('Firebase bağlı değil.'); return; }
             if(!currentUser){ alert('Oy vermek için giriş yapmalısınız!'); return; }
+            // Hem localStorage hem Firebase'de oy kontrolü
             const voterKey = 'poll_vote_' + id + '_' + currentUser.key;
             if(localStorage.getItem(voterKey) !== null) { alert('Bu ankette zaten oy kullandınız!'); return; }
-            db.ref('class9d/polls/' + id + '/options/' + oIdx + '/votes').transaction((current) => (current || 0) + 1);
-            localStorage.setItem(voterKey, oIdx);
-            db.ref('class9d/polls').once('value', snap => {
-                const data = snap.val() || {};
-                const list = Object.entries(data).map(([pid, val]) => ({id: pid, ...val}));
-                renderPolls(list);
+            // Firebase'de bu kullanıcı daha önce oy verdi mi diye kontrol et
+            db.ref('class9d/pollVoters/' + id + '/' + currentUser.key).once('value', snap => {
+                if(snap.val() !== null) {
+                    localStorage.setItem(voterKey, snap.val()); // senkronize et
+                    alert('Bu ankette zaten oy kullandınız!'); return;
+                }
+                // Oy ver
+                db.ref('class9d/polls/' + id + '/options/' + oIdx + '/votes').transaction(cur => (cur||0)+1);
+                db.ref('class9d/pollVoters/' + id + '/' + currentUser.key).set(oIdx);
+                localStorage.setItem(voterKey, oIdx);
+                // Yeniden render
+                db.ref('class9d/polls').once('value', snap2 => {
+                    const data = snap2.val() || {};
+                    const list = Object.entries(data).map(([pid, val]) => ({id: pid, ...val}));
+                    renderPolls(list);
+                });
             });
         }
 
@@ -2396,13 +2396,6 @@
                 closeModal('pollModal');
                 e.target.reset();
                 if(isPending) alert('✅ Anket isteğiniz yöneticiye gönderildi.');
-            });
-        }
-
-        function votePoll(id, oIdx) {
-            if(!db){alert('Firebase bağlı değil.');return;}
-            db.ref('class9d/polls/' + id + '/options/' + oIdx + '/votes').transaction((current) => {
-                return (current || 0) + 1;
             });
         }
 
@@ -2824,11 +2817,8 @@ Kısa, sıcak ve yardımcı cevaplar ver. Emoji kullanabilirsin. Yalnızca Türk
         window.onload = init;
     </script>
     <!-- Footer Credit -->
-    <div style="position:fixed; bottom:0; left:0; right:0; text-align:center; padding:0.5rem 1rem; font-size:0.72rem; color:var(--text-muted); background:var(--glass); backdrop-filter:blur(10px); border-top:1px solid var(--border); z-index:50; pointer-events:none;">
-        <i class="fas fa-code" style="color:var(--primary); margin-right:4px;"></i>
-        9-D Sınıf Portalı &mdash; Sevgiyle tasarlandı ve hayata geçirildi &bull;
-        <span style="color:var(--primary); font-weight:600;">Abdullah Batu Baddal</span>
-        <i class="fas fa-heart" style="color:var(--secondary); margin-left:4px; font-size:0.65rem;"></i>
+    <div style="position:fixed; bottom:0; left:0; right:0; text-align:center; padding:0.4rem 1rem; font-size:0.72rem; color:var(--text-muted); background:var(--glass); backdrop-filter:blur(10px); border-top:1px solid var(--border); z-index:50; pointer-events:none;">
+        9-D Sınıf Portalı &nbsp;·&nbsp; <span style="color:var(--primary); font-weight:600;">Abdullah Batu Baddal</span>
     </div>
 </body>
 </html>
