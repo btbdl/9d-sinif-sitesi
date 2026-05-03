@@ -797,6 +797,7 @@
                 <li class="nav-item"><button class="nav-link" onclick="showSection('memories', this)"><i class="fas fa-camera"></i> Anılar</button></li>
                 <li class="nav-item"><button class="nav-link" onclick="showSection('chatbot', this)"><i class="fas fa-robot"></i> AI Asistan</button></li>
                 <li class="nav-item"><button class="nav-link" onclick="showSection('suggestions', this)"><i class="fas fa-lightbulb"></i> Öneriler</button></li>
+                <li class="nav-item"><button class="nav-link" onclick="showSection('links', this)"><i class="fas fa-external-link-alt"></i> Bağlantılar</button></li>
                 <li class="nav-item"><button class="nav-link" onclick="showSection('teachers', this)"><i class="fas fa-chalkboard-teacher"></i> Öğretmenler</button></li>
                 <li class="nav-item" id="navProfile" style="display:none"><button class="nav-link" onclick="showSection('profile', this)"><i class="fas fa-user-circle"></i> Profilim</button></li>
                 <li class="nav-item" id="navAdmin" style="display:none"><button class="nav-link" onclick="showSection('admin-panel', this)"><i class="fas fa-shield-alt"></i> Yönetici Paneli <span class="pending-badge" id="pendingBadge" style="display:none">0</span></button></li>
@@ -1094,6 +1095,86 @@
                 </div>
             </section>
 
+            <!-- Bağlantılar -->
+            <section id="links" class="section">
+                <div class="section-title"><i class="fas fa-external-link-alt"></i> Faydalı Bağlantılar</div>
+                <p style="color:var(--text-muted); margin-bottom:1.5rem; font-size:0.9rem;">Sık kullandığınız eğitim portallarına buradan hızlıca ulaşabilirsiniz.</p>
+                <div class="card-grid" style="grid-template-columns: repeat(auto-fill, minmax(260px,1fr));">
+                    <a href="https://www.eba.gov.tr" target="_blank" style="text-decoration:none;">
+                        <div class="card" style="cursor:pointer; transition:all 0.2s;" onmouseover="this.style.borderColor='var(--primary)'" onmouseout="this.style.borderColor=''">
+                            <div class="card-header">
+                                <div>
+                                    <div class="card-title">EBA</div>
+                                    <div class="card-desc">Eğitim Bilişim Ağı</div>
+                                </div>
+                                <div class="card-icon icon-blue"><i class="fas fa-laptop"></i></div>
+                            </div>
+                            <div style="font-size:0.82rem;color:var(--text-muted);">eba.gov.tr &nbsp;<i class="fas fa-external-link-alt" style="font-size:0.7rem;"></i></div>
+                        </div>
+                    </a>
+                    <a href="https://www.meb.gov.tr/e-okul/" target="_blank" style="text-decoration:none;">
+                        <div class="card" style="cursor:pointer; transition:all 0.2s;" onmouseover="this.style.borderColor='var(--success)'" onmouseout="this.style.borderColor=''">
+                            <div class="card-header">
+                                <div>
+                                    <div class="card-title">e-Okul</div>
+                                    <div class="card-desc">Milli Eğitim e-Okul Sistemi</div>
+                                </div>
+                                <div class="card-icon icon-green"><i class="fas fa-school"></i></div>
+                            </div>
+                            <div style="font-size:0.82rem;color:var(--text-muted);">meb.gov.tr &nbsp;<i class="fas fa-external-link-alt" style="font-size:0.7rem;"></i></div>
+                        </div>
+                    </a>
+                    <a href="https://www.turkiye.gov.tr" target="_blank" style="text-decoration:none;">
+                        <div class="card" style="cursor:pointer; transition:all 0.2s;" onmouseover="this.style.borderColor='var(--accent)'" onmouseout="this.style.borderColor=''">
+                            <div class="card-header">
+                                <div>
+                                    <div class="card-title">e-Devlet</div>
+                                    <div class="card-desc">Türkiye Cumhurbaşkanlığı</div>
+                                </div>
+                                <div class="card-icon icon-cyan"><i class="fas fa-landmark"></i></div>
+                            </div>
+                            <div style="font-size:0.82rem;color:var(--text-muted);">turkiye.gov.tr &nbsp;<i class="fas fa-external-link-alt" style="font-size:0.7rem;"></i></div>
+                        </div>
+                    </a>
+                    <a href="https://mebbis.meb.gov.tr" target="_blank" style="text-decoration:none;">
+                        <div class="card" style="cursor:pointer; transition:all 0.2s;" onmouseover="this.style.borderColor='var(--secondary)'" onmouseout="this.style.borderColor=''">
+                            <div class="card-header">
+                                <div>
+                                    <div class="card-title">MEBBİS</div>
+                                    <div class="card-desc">MEB Bilgi İşlem Sistemi</div>
+                                </div>
+                                <div class="card-icon icon-pink"><i class="fas fa-database"></i></div>
+                            </div>
+                            <div style="font-size:0.82rem;color:var(--text-muted);">mebbis.meb.gov.tr &nbsp;<i class="fas fa-external-link-alt" style="font-size:0.7rem;"></i></div>
+                        </div>
+                    </a>
+                    <a href="https://www.odsgm.meb.gov.tr/kurslar" target="_blank" style="text-decoration:none;">
+                        <div class="card" style="cursor:pointer; transition:all 0.2s;" onmouseover="this.style.borderColor='var(--warning)'" onmouseout="this.style.borderColor=''">
+                            <div class="card-header">
+                                <div>
+                                    <div class="card-title">MEB Sınavlar</div>
+                                    <div class="card-desc">LGS, YKS ve sınav bilgileri</div>
+                                </div>
+                                <div class="card-icon icon-orange"><i class="fas fa-file-alt"></i></div>
+                            </div>
+                            <div style="font-size:0.82rem;color:var(--text-muted);">meb.gov.tr &nbsp;<i class="fas fa-external-link-alt" style="font-size:0.7rem;"></i></div>
+                        </div>
+                    </a>
+                    <a href="https://www.osym.gov.tr" target="_blank" style="text-decoration:none;">
+                        <div class="card" style="cursor:pointer; transition:all 0.2s;" onmouseover="this.style.borderColor='var(--primary)'" onmouseout="this.style.borderColor=''">
+                            <div class="card-header">
+                                <div>
+                                    <div class="card-title">ÖSYM</div>
+                                    <div class="card-desc">YKS, TYT, AYT bilgileri</div>
+                                </div>
+                                <div class="card-icon icon-blue"><i class="fas fa-graduation-cap"></i></div>
+                            </div>
+                            <div style="font-size:0.82rem;color:var(--text-muted);">osym.gov.tr &nbsp;<i class="fas fa-external-link-alt" style="font-size:0.7rem;"></i></div>
+                        </div>
+                    </a>
+                </div>
+            </section>
+
             <!-- Teachers -->
             <section id="teachers" class="section">
                 <div class="section-title"><i class="fas fa-chalkboard-teacher"></i> Öğretmenlerimiz</div>
@@ -1289,11 +1370,17 @@
 
         // Tüm öğrenci listesi (Abdullah Batu Baddal hariç - o admin)
         const DEFAULT_STUDENTS = [
-            'Abdullah Mert Türk', 'Ahmet Eymen Alkaptan', 'Ali Sarp Kaya', 'Aybüke Demirel', 'Beren Kılıç', 'Berhan Taşkın', 'Betül Akdağ', 'Beyza Erkut', 'Cennet Aydoğdu', 'Cennet Yağmur Akpınar', 'Dilek Tutar', 'Elif Özay', 'Emine İnan', 'Enver Gürel', 'Etem Faruk Karaca', 'Fatima Zeynep Kahraman', 'Ferhat Ayvaz', 'Gülsüm Begüm Özdemir', 'Gürol Salih Sağır', 'Halil Göktuğ Aslantaş', 'Halise Ceren Uyan', 'Hatice Özek', 'Mete Aydın', 'Muhammed Emir Göksu', 'Osman Sunguralp Kılıç', 'Ömertaha Çelik', 'Ramazan Emir Kök', 'Sena Kansu', 'Sungur Alp Öztürk', 'Şerife Selma Dinler', 'Yiğit Kayra Canpolat', 'Zehra Keskin'
+            'Abdullah Mert Türk', 'Ahmet Eymen Alkaptan', 'Ali Sarp Kaya',
+            'Aybüke Demirel', 'Beren Kılıç', 'Berhan Taşkın', 'Betül Akdağ',
+            'Beyza Erkut', 'Cennet Aydoğdu', 'Cennet Yağmur Akpınar',
+            'Dilek Tutar', 'Elif Özay', 'Emine İnan', 'Enver Gürel',
+            'Etem Faruk Karaca', 'Fatima Zeynep Kahraman', 'Ferhat Ayvaz',
+            'Gülsüm Begüm Özdemir', 'Gürol Salih Sağır', 'Halil Göktuğ Aslantaş',
+            'Halise Ceren Uyan', 'Hatice Özek', 'Mete Aydın',
+            'Muhammed Emir Göksu', 'Osman Sunguralp Kılıç', 'Ömertaha Çelik',
+            'Ramazan Emir Kök', 'Sena Kansu', 'Sungur Alp Öztürk',
+            'Şerife Selma Dinler', 'Yiğit Kayra Canpolat', 'Zehra Keskin'
         ];
-        // Not: Yukarıdaki liste örnek isimlerdir. Admin panelinden istediğiniz
-        // öğrenci adlarını ekleyebilir/silebilirsiniz.
-
         let currentUser = null; // {name, role, key, photo}
 
         function nameToKey(name) {
@@ -1425,6 +1512,14 @@
                 }
                 // Profile section update
                 updateProfileSection();
+            }
+            // Eğer dashboard'daysa başlığı güncelle
+            const dashEl = document.getElementById('dashboard');
+            if(dashEl && dashEl.classList.contains('active')) {
+                const titleEl = document.getElementById('page-title');
+                if(titleEl) titleEl.textContent = currentUser
+                    ? ('Hoş Geldin, ' + currentUser.name.split(' ')[0] + '! 👋')
+                    : 'Hoş Geldin, 9-D! 👋';
             }
         }
 
@@ -1836,7 +1931,7 @@
                 btn.classList.add('active');
             }
             const titles = {
-                dashboard: 'Hoş Geldin, 9-D! 👋',
+                dashboard: currentUser ? ('Hoş Geldin, ' + currentUser.name.split(' ')[0] + '! 👋') : 'Hoş Geldin, 9-D! 👋',
                 schedule: 'Haftalık Ders Programı 📅',
                 homework: 'Ödev & Sınav Takvimi 📝',
                 notes: 'Ders Notları 📚',
@@ -1847,6 +1942,7 @@
                 memories: 'Sınıf Anıları 📸',
                 chatbot: 'AI Asistan 🤖',
                 suggestions: 'Kitap & Kaynak Önerileri 💡',
+                links: 'Faydalı Bağlantılar 🔗',
                 teachers: 'Öğretmenlerimiz 👨‍🏫'
             };
             document.getElementById('page-title').textContent = titles[id] || '9-D Portal';
@@ -2235,28 +2331,54 @@
             }
             container.innerHTML = list.reverse().map((p) => {
                 const totalVotes = p.options.reduce((sum, o) => sum + (o.votes || 0), 0);
+                const voterKey = currentUser ? 'poll_vote_' + p.id + '_' + currentUser.key : null;
+                const hasVoted = voterKey ? localStorage.getItem(voterKey) !== null : false;
+                const votedIdx = hasVoted ? parseInt(localStorage.getItem(voterKey)) : -1;
                 return `
                 <div class="list-item">
                     <div class="item-header" style="margin-bottom: 1rem;">
-                        <div class="item-title">${p.question}</div>
-                        <button class="btn btn-danger btn-sm" onclick="deletePoll('${p.id}')"><i class="fas fa-trash"></i></button>
+                        <div>
+                            <div class="item-title">${p.question}</div>
+                            ${hasVoted ? '<span class="badge badge-success" style="margin-top:0.3rem;"><i class="fas fa-check"></i> Oy kullandınız</span>' : ''}
+                        </div>
+                        ${currentUser?.role === 'admin' ? `<button class="btn btn-danger btn-sm" onclick="deletePoll('${p.id}')"><i class="fas fa-trash"></i></button>` : ''}
                     </div>
                     <div class="poll-options">
                         ${p.options.map((o, oIdx) => {
-                            const percent = totalVotes > 0 ? Math.round((o.votes / totalVotes) * 100) : 0;
+                            const percent = totalVotes > 0 ? Math.round(((o.votes||0) / totalVotes) * 100) : 0;
+                            const isMyVote = votedIdx === oIdx;
                             return `
-                            <div class="poll-option" onclick="votePoll('${p.id}', ${oIdx})">
+                            <div class="poll-option"
+                                 onclick="${hasVoted ? '' : `votePoll('${p.id}', ${oIdx})`}"
+                                 style="cursor:${hasVoted?'default':'pointer'};${isMyVote?'border-color:var(--primary);':''} ${hasVoted&&!isMyVote?'opacity:0.7;':''}" >
                                 <div class="poll-bar" style="width: ${percent}%"></div>
                                 <div class="poll-option-content">
-                                    <span>${o.text}</span>
+                                    <span>${isMyVote ? '✓ ' : ''}${o.text}</span>
                                     <span class="poll-votes">${o.votes || 0} oy (${percent}%)</span>
                                 </div>
                             </div>`;
                         }).join('')}
                     </div>
-                    <div style="margin-top: 0.75rem; font-size: 0.8rem; color: var(--text-muted);">Toplam ${totalVotes} oy</div>
+                    <div style="margin-top: 0.75rem; font-size: 0.8rem; color: var(--text-muted);">
+                        Toplam ${totalVotes} oy
+                        ${!currentUser && !hasVoted ? ' &nbsp;·&nbsp; <span style="color:var(--warning);">Oy vermek için giriş yapın</span>' : ''}
+                    </div>
                 </div>`;
             }).join('');
+        }
+
+        function votePoll(id, oIdx) {
+            if(!db){ alert('Firebase bağlı değil.'); return; }
+            if(!currentUser){ alert('Oy vermek için giriş yapmalısınız!'); return; }
+            const voterKey = 'poll_vote_' + id + '_' + currentUser.key;
+            if(localStorage.getItem(voterKey) !== null) { alert('Bu ankette zaten oy kullandınız!'); return; }
+            db.ref('class9d/polls/' + id + '/options/' + oIdx + '/votes').transaction((current) => (current || 0) + 1);
+            localStorage.setItem(voterKey, oIdx);
+            db.ref('class9d/polls').once('value', snap => {
+                const data = snap.val() || {};
+                const list = Object.entries(data).map(([pid, val]) => ({id: pid, ...val}));
+                renderPolls(list);
+            });
         }
 
         function savePoll(e) {
@@ -2701,5 +2823,12 @@ Kısa, sıcak ve yardımcı cevaplar ver. Emoji kullanabilirsin. Yalnızca Türk
         // ===================== START =====================
         window.onload = init;
     </script>
+    <!-- Footer Credit -->
+    <div style="position:fixed; bottom:0; left:0; right:0; text-align:center; padding:0.5rem 1rem; font-size:0.72rem; color:var(--text-muted); background:var(--glass); backdrop-filter:blur(10px); border-top:1px solid var(--border); z-index:50; pointer-events:none;">
+        <i class="fas fa-code" style="color:var(--primary); margin-right:4px;"></i>
+        9-D Sınıf Portalı &mdash; Sevgiyle tasarlandı ve hayata geçirildi &bull;
+        <span style="color:var(--primary); font-weight:600;">Abdullah Batu Baddal</span>
+        <i class="fas fa-heart" style="color:var(--secondary); margin-left:4px; font-size:0.65rem;"></i>
+    </div>
 </body>
 </html>
