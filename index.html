@@ -693,6 +693,73 @@
         ::-webkit-scrollbar-track { background: var(--bg); }
         ::-webkit-scrollbar-thumb { background: var(--surface-light); border-radius: 4px; }
         ::-webkit-scrollbar-thumb:hover { background: var(--border); }
+        /* ===== AUTH & PROFILE STYLES ===== */
+        .sidebar-user-card {
+            display: flex; align-items: center; gap: 0.75rem;
+            padding: 0.875rem 1rem; background: var(--surface-light);
+            border-radius: 14px; margin-bottom: 1rem; cursor: pointer;
+            transition: all 0.2s; border: 1px solid var(--border);
+        }
+        .sidebar-user-card:hover { border-color: var(--primary); }
+        .sidebar-avatar {
+            width: 40px; height: 40px; border-radius: 50%;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            display: flex; align-items: center; justify-content: center;
+            font-size: 0.9rem; font-weight: 700; color: white;
+            overflow: hidden; flex-shrink: 0;
+        }
+        .sidebar-avatar img { width:100%; height:100%; object-fit:cover; border-radius:50%; }
+        .sidebar-user-name { font-weight: 700; font-size: 0.9rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .role-badge { display: inline-block; padding: 0.15rem 0.5rem; border-radius: 50px; font-size: 0.7rem; font-weight: 700; }
+        .role-badge.guest { background: rgba(148,163,184,0.2); color: var(--text-muted); }
+        .role-badge.student { background: rgba(16,185,129,0.2); color: var(--success); }
+        .role-badge.admin { background: rgba(245,158,11,0.2); color: var(--warning); }
+        .profile-header {
+            display: flex; align-items: center; gap: 2rem;
+            background: var(--glass); border: 1px solid var(--border);
+            border-radius: 20px; padding: 2rem; margin-bottom: 1.5rem; flex-wrap: wrap;
+        }
+        .profile-avatar {
+            width: 90px; height: 90px; border-radius: 50%;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            display: flex; align-items: center; justify-content: center;
+            font-size: 2rem; font-weight: 700; color: white;
+            cursor: pointer; overflow: hidden; flex-shrink: 0;
+            transition: opacity 0.2s; border: 3px solid var(--primary);
+        }
+        .profile-avatar:hover { opacity: 0.85; }
+        .profile-info h3 { font-size: 1.5rem; font-weight: 800; margin-bottom: 0.35rem; }
+        .pending-badge {
+            background: var(--danger); color: white; border-radius: 50px;
+            padding: 0.1rem 0.45rem; font-size: 0.7rem; font-weight: 700;
+            margin-left: 0.35rem; display: inline-flex; align-items: center;
+            justify-content: center; min-width: 18px;
+        }
+        .pending-card {
+            background: var(--surface); border: 1px solid var(--border);
+            border-radius: 12px; padding: 1rem 1.25rem; margin-bottom: 0.75rem;
+        }
+        .pending-actions { display: flex; gap: 0.5rem; margin-top: 0.75rem; flex-wrap: wrap; }
+        .user-row {
+            display: flex; align-items: center; gap: 0.75rem;
+            padding: 0.75rem 0; border-bottom: 1px solid var(--border);
+        }
+        .user-row:last-child { border-bottom: none; }
+        .user-avatar-lg {
+            width: 38px; height: 38px; border-radius: 50%;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            display: flex; align-items: center; justify-content: center;
+            font-size: 0.8rem; font-weight: 700; color: white;
+            overflow: hidden; flex-shrink: 0;
+        }
+        .user-avatar-lg img { width:100%; height:100%; object-fit:cover; border-radius:50%; }
+        .teacher-card { cursor: pointer; }
+        .teacher-schedule-row {
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 0.6rem 0.875rem; background: var(--surface-light);
+            border-radius: 10px; margin-bottom: 0.4rem; font-size: 0.85rem;
+        }
+        .teacher-schedule-day { font-weight: 700; color: var(--primary); min-width: 80px; }
     </style>
 </head>
 <body>
@@ -709,6 +776,15 @@
                     <span>Süleyman Demirel FL</span>
                 </div>
             </div>
+            <!-- Kullanıcı Kartı -->
+            <div class="sidebar-user-card" onclick="openLoginModal()">
+                <div class="sidebar-avatar" id="sidebarAvatar"><i class="fas fa-user"></i></div>
+                <div style="flex:1; min-width:0;">
+                    <div class="sidebar-user-name" id="sidebarUserName">Giriş Yap</div>
+                    <span class="role-badge guest" id="sidebarRoleBadge">Misafir</span>
+                </div>
+                <i class="fas fa-chevron-right" style="color:var(--text-muted); font-size:0.75rem;"></i>
+            </div>
             <ul class="nav-menu">
                 <li class="nav-item"><button class="nav-link active" onclick="showSection('dashboard', this)"><i class="fas fa-home"></i> Ana Sayfa</button></li>
                 <li class="nav-item"><button class="nav-link" onclick="showSection('schedule', this)"><i class="fas fa-calendar-alt"></i> Ders Programı</button></li>
@@ -722,6 +798,8 @@
                 <li class="nav-item"><button class="nav-link" onclick="showSection('chatbot', this)"><i class="fas fa-robot"></i> AI Asistan</button></li>
                 <li class="nav-item"><button class="nav-link" onclick="showSection('suggestions', this)"><i class="fas fa-lightbulb"></i> Öneriler</button></li>
                 <li class="nav-item"><button class="nav-link" onclick="showSection('teachers', this)"><i class="fas fa-chalkboard-teacher"></i> Öğretmenler</button></li>
+                <li class="nav-item" id="navProfile" style="display:none"><button class="nav-link" onclick="showSection('profile', this)"><i class="fas fa-user-circle"></i> Profilim</button></li>
+                <li class="nav-item" id="navAdmin" style="display:none"><button class="nav-link" onclick="showSection('admin-panel', this)"><i class="fas fa-shield-alt"></i> Yönetici Paneli <span class="pending-badge" id="pendingBadge" style="display:none">0</span></button></li>
             </ul>
             <div class="sidebar-footer">
                 <button class="theme-toggle" onclick="toggleTheme()">
@@ -954,6 +1032,68 @@
                 <div class="item-list" id="suggestionsList"><div class="loading-spinner"></div> Yükleniyor...</div>
             </section>
 
+            <!-- Profile Section -->
+            <section id="profile" class="section">
+                <div class="section-title"><i class="fas fa-user-circle"></i> Profilim</div>
+                <div class="profile-header">
+                    <div class="profile-avatar" onclick="document.getElementById('profilePhotoInput').click()" id="profileAvatarBig">
+                        <span id="profileAvatarInitials">?</span>
+                    </div>
+                    <div class="profile-info">
+                        <h3 id="profileName">—</h3>
+                        <p id="profileRoleText">—</p>
+                        <small style="color:var(--text-muted); font-size:0.78rem;"><i class="fas fa-camera"></i> Avatara tıklayarak fotoğraf ekle</small>
+                    </div>
+                </div>
+                <input type="file" id="profilePhotoInput" accept="image/*" style="display:none" onchange="handleProfilePhoto(this)">
+
+                <div class="card" style="margin-bottom:1.25rem;">
+                    <div class="card-title" style="margin-bottom:1rem;"><i class="fas fa-lock"></i> Şifre Değiştir</div>
+                    <div class="form-group"><label class="form-label">Mevcut Şifre</label><input type="password" class="form-control" id="oldPassword" placeholder="Mevcut şifreniz"></div>
+                    <div class="form-group"><label class="form-label">Yeni Şifre</label><input type="password" class="form-control" id="newPassword" placeholder="Yeni şifre (en az 4 karakter)"></div>
+                    <div class="form-group"><label class="form-label">Yeni Şifre (Tekrar)</label><input type="password" class="form-control" id="newPassword2" placeholder="Yeni şifreyi tekrar girin"></div>
+                    <button class="btn btn-primary" onclick="changePassword()"><i class="fas fa-save"></i> Şifreyi Güncelle</button>
+                </div>
+
+                <div class="card">
+                    <div class="card-title" style="margin-bottom:1rem;"><i class="fas fa-sign-out-alt"></i> Hesap</div>
+                    <button class="btn btn-danger" onclick="logout()"><i class="fas fa-sign-out-alt"></i> Çıkış Yap</button>
+                </div>
+            </section>
+
+            <!-- Admin Panel -->
+            <section id="admin-panel" class="section">
+                <div class="section-title"><i class="fas fa-shield-alt"></i> Yönetici Paneli</div>
+
+                <!-- Pending Approvals -->
+                <div class="card" style="margin-bottom:1.5rem;">
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1rem;">
+                        <div class="card-title"><i class="fas fa-clock" style="color:var(--warning)"></i> Onay Bekleyen Paylaşımlar</div>
+                        <span id="pendingCountText" style="font-size:0.85rem; color:var(--text-muted);">Yükleniyor...</span>
+                    </div>
+                    <div id="pendingList"><div class="loading-spinner"></div></div>
+                </div>
+
+                <!-- User Management -->
+                <div class="card" style="margin-bottom:1.5rem;">
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1rem;">
+                        <div class="card-title"><i class="fas fa-users"></i> Kullanıcı Yönetimi</div>
+                        <button class="btn btn-primary btn-sm" onclick="openModal('addUserModal')"><i class="fas fa-plus"></i> Öğrenci Ekle</button>
+                    </div>
+                    <div id="userList"><div class="loading-spinner"></div></div>
+                </div>
+
+                <!-- Gemini API Key -->
+                <div class="card">
+                    <div class="card-title" style="margin-bottom:1rem;"><i class="fas fa-key" style="color:#4285f4"></i> Gemini API Anahtarı</div>
+                    <div style="display:flex; gap:0.5rem; flex-wrap:wrap;">
+                        <input type="password" id="adminKeyInput" placeholder="AIzaSy..." style="background:var(--surface); border:1px solid var(--border); border-radius:8px; padding:0.5rem 0.85rem; color:var(--text); font-size:0.9rem; flex:1; min-width:200px; font-family:monospace;">
+                        <button class="btn btn-primary btn-sm" onclick="saveApiKeyToFirebase()"><i class="fas fa-cloud-upload-alt"></i> Kaydet</button>
+                    </div>
+                    <small style="display:block;margin-top:0.5rem;color:var(--text-muted);font-size:0.78rem;">Bir kez kaydedilince tüm cihazlarda çalışır.</small>
+                </div>
+            </section>
+
             <!-- Teachers -->
             <section id="teachers" class="section">
                 <div class="section-title"><i class="fas fa-chalkboard-teacher"></i> Öğretmenlerimiz</div>
@@ -965,7 +1105,59 @@
     <!-- Sync Status Indicator -->
     <div class="sync-status online" id="syncStatus"><i class="fas fa-wifi"></i> <span>Canlı bağlantı</span></div>
 
-    <!-- Modals -->
+    <!-- Login Modal -->
+    <div class="modal-overlay" id="loginModal">
+        <div class="modal" style="max-width:420px;">
+            <div class="modal-header">
+                <div class="modal-title"><i class="fas fa-sign-in-alt"></i> Giriş Yap</div>
+                <button class="modal-close" onclick="closeModal('loginModal')"><i class="fas fa-times"></i></button>
+            </div>
+            <div style="text-align:center; margin-bottom:1.5rem; color:var(--text-muted); font-size:0.9rem;">
+                Kullanıcı adı: <strong>Tam adınız</strong> (Örn: Ahmet Yılmaz)<br>
+                Başlangıç şifresi: <strong>12345</strong>
+            </div>
+            <div class="form-group">
+                <label class="form-label">Kullanıcı Adı</label>
+                <input type="text" class="form-control" id="loginUsername" placeholder="Ad Soyad (tam olarak)">
+            </div>
+            <div class="form-group">
+                <label class="form-label">Şifre</label>
+                <input type="password" class="form-control" id="loginPassword" placeholder="Şifreniz" onkeypress="if(event.key==='Enter') doLogin()">
+            </div>
+            <div id="loginError" style="color:var(--danger); font-size:0.85rem; margin-bottom:1rem; display:none;"></div>
+            <button class="btn btn-primary" style="width:100%" onclick="doLogin()"><i class="fas fa-sign-in-alt"></i> Giriş Yap</button>
+            <div style="text-align:center; margin-top:1rem; font-size:0.8rem; color:var(--text-muted);">
+                Hesabınız yoksa yöneticinizle iletişime geçin.
+            </div>
+        </div>
+    </div>
+
+    <!-- Teacher Detail Modal -->
+    <div class="modal-overlay" id="teacherDetailModal">
+        <div class="modal" style="max-width:520px;">
+            <div class="modal-header">
+                <div class="modal-title" id="tdModalTitle">Öğretmen Detayı</div>
+                <button class="modal-close" onclick="closeModal('teacherDetailModal')"><i class="fas fa-times"></i></button>
+            </div>
+            <div id="teacherDetailContent"></div>
+        </div>
+    </div>
+
+    <!-- Add User Modal -->
+    <div class="modal-overlay" id="addUserModal">
+        <div class="modal" style="max-width:420px;">
+            <div class="modal-header">
+                <div class="modal-title"><i class="fas fa-user-plus"></i> Öğrenci Hesabı Ekle</div>
+                <button class="modal-close" onclick="closeModal('addUserModal')"><i class="fas fa-times"></i></button>
+            </div>
+            <form onsubmit="addStudent(event)">
+                <div class="form-group"><label class="form-label">Tam Ad (kullanıcı adı olacak)</label><input type="text" class="form-control" id="newStudentName" required placeholder="Örn: Ahmet Yılmaz"></div>
+                <div class="form-group"><label class="form-label">Başlangıç Şifresi</label><input type="text" class="form-control" id="newStudentPass" value="12345" required></div>
+                <button type="submit" class="btn btn-primary" style="width:100%"><i class="fas fa-user-plus"></i> Ekle</button>
+            </form>
+        </div>
+    </div>
+
     <div class="modal-overlay" id="homeworkModal">
         <div class="modal">
             <div class="modal-header"><div class="modal-title">Yeni Ödev / Sınav Ekle</div><button class="modal-close" onclick="closeModal('homeworkModal')"><i class="fas fa-times"></i></button></div>
@@ -1090,6 +1282,366 @@
             return db.ref(path);
         }
 
+        // ===================== AUTH SYSTEM =====================
+        const ADMINS = ['Abdullah Batu Baddal', 'Ahmet Güngör', 'Kenan Yılmaz'];
+        const ADMIN_PASS = '2026';
+        const STUDENT_PASS = '12345';
+
+        // Tüm öğrenci listesi (Abdullah Batu Baddal hariç - o admin)
+        const DEFAULT_STUDENTS = [
+            'Ahmet Alpaslan', 'Aleyna Yıldız', 'Ali Can Demir', 'Arzu Kaya',
+            'Ayşe Nur Çelik', 'Baran Güneş', 'Beren Arslan', 'Büşra Öztürk',
+            'Cem Doğan', 'Deniz Yılmaz', 'Ebru Şahin', 'Elif Kara',
+            'Emre Yıldırım', 'Fatma Nur Ak', 'Furkan Çetin', 'Gizem Polat',
+            'Hasan Öz', 'İrem Aydın', 'Kaan Türk', 'Lale Güler',
+            'Mehmet Emin Sari', 'Merve Koç', 'Murat Aslan', 'Mustafa Bozkurt',
+            'Neslihan Yurt', 'Nihat Duman', 'Pınar Çavuş', 'Seda Ateş',
+            'Semih Ercan', 'Sercan Kılıç', 'Sude Bulut', 'Tuğba Özkan',
+            'Uğur Kaplan', 'Ümit Taş', 'Yeliz Acar', 'Zeynep Coşkun'
+        ];
+        // Not: Yukarıdaki liste örnek isimlerdir. Admin panelinden istediğiniz
+        // öğrenci adlarını ekleyebilir/silebilirsiniz.
+
+        let currentUser = null; // {name, role, key, photo}
+
+        function nameToKey(name) {
+            return name.toLowerCase()
+                .replace(/ğ/g,'g').replace(/ü/g,'u').replace(/ş/g,'s')
+                .replace(/ı/g,'i').replace(/ö/g,'o').replace(/ç/g,'c')
+                .replace(/\s+/g,'_')
+                .replace(/[^a-z0-9_]/g,'');
+        }
+
+        // Firebase'de kullanıcıları ilk kez oluştur
+        function initUsers() {
+            if(!db) return;
+            db.ref('class9d/users').once('value', snap => {
+                const existing = snap.val() || {};
+                const updates = {};
+                // Admin hesapları
+                ADMINS.forEach(name => {
+                    const key = nameToKey(name);
+                    if(!existing[key]) {
+                        updates[key] = { name, role: 'admin', password: ADMIN_PASS };
+                    }
+                });
+                // Öğrenci hesapları (sadece yoksa ekle)
+                DEFAULT_STUDENTS.forEach(name => {
+                    const key = nameToKey(name);
+                    if(!existing[key]) {
+                        updates[key] = { name, role: 'student', password: STUDENT_PASS };
+                    }
+                });
+                if(Object.keys(updates).length > 0) {
+                    db.ref('class9d/users').update(updates);
+                }
+            });
+        }
+
+        function openLoginModal() {
+            if(currentUser) {
+                // Zaten giriş yapılmış — profil/çıkış
+                if(currentUser.role === 'admin') showSection('admin-panel', null);
+                else showSection('profile', null);
+                return;
+            }
+            document.getElementById('loginUsername').value = '';
+            document.getElementById('loginPassword').value = '';
+            document.getElementById('loginError').style.display = 'none';
+            openModal('loginModal');
+        }
+
+        function doLogin() {
+            const username = document.getElementById('loginUsername').value.trim();
+            const password = document.getElementById('loginPassword').value;
+            const errEl = document.getElementById('loginError');
+            errEl.style.display = 'none';
+
+            if(!username || !password) {
+                errEl.textContent = 'Kullanıcı adı ve şifre gerekli.';
+                errEl.style.display = 'block'; return;
+            }
+            if(!db) {
+                errEl.textContent = 'Firebase bağlı değil. Config\'i doldurun.';
+                errEl.style.display = 'block'; return;
+            }
+
+            const key = nameToKey(username);
+            db.ref('class9d/users/' + key).once('value', snap => {
+                const user = snap.val();
+                if(!user) {
+                    errEl.textContent = 'Bu kullanıcı adı bulunamadı.';
+                    errEl.style.display = 'block'; return;
+                }
+                if(user.password !== password) {
+                    errEl.textContent = 'Şifre yanlış.';
+                    errEl.style.display = 'block'; return;
+                }
+                // Başarılı giriş
+                currentUser = { name: user.name, role: user.role, key, photo: user.photo || null };
+                localStorage.setItem('9d_session', JSON.stringify(currentUser));
+                closeModal('loginModal');
+                updateAuthUI();
+                if(currentUser.role === 'admin') {
+                    setupAdminListeners();
+                    showSection('admin-panel', null);
+                } else {
+                    showSection('profile', null);
+                }
+            });
+        }
+
+        function logout() {
+            currentUser = null;
+            localStorage.removeItem('9d_session');
+            updateAuthUI();
+            showSection('dashboard', document.querySelector('.nav-link'));
+        }
+
+        function updateAuthUI() {
+            const sidebarName = document.getElementById('sidebarUserName');
+            const sidebarBadge = document.getElementById('sidebarRoleBadge');
+            const sidebarAvatar = document.getElementById('sidebarAvatar');
+            const navProfile = document.getElementById('navProfile');
+            const navAdmin = document.getElementById('navAdmin');
+
+            if(!currentUser) {
+                sidebarName.textContent = 'Giriş Yap';
+                sidebarBadge.textContent = 'Misafir';
+                sidebarBadge.className = 'role-badge guest';
+                sidebarAvatar.innerHTML = '<i class="fas fa-user"></i>';
+                navProfile.style.display = 'none';
+                navAdmin.style.display = 'none';
+            } else {
+                sidebarName.textContent = currentUser.name.split(' ')[0];
+                if(currentUser.role === 'admin') {
+                    sidebarBadge.textContent = 'Admin';
+                    sidebarBadge.className = 'role-badge admin';
+                    navAdmin.style.display = 'block';
+                    navProfile.style.display = 'block';
+                } else {
+                    sidebarBadge.textContent = 'Öğrenci';
+                    sidebarBadge.className = 'role-badge student';
+                    navAdmin.style.display = 'none';
+                    navProfile.style.display = 'block';
+                }
+                if(currentUser.photo) {
+                    sidebarAvatar.innerHTML = `<img src="${currentUser.photo}">`;
+                } else {
+                    const initials = currentUser.name.split(' ').map(n=>n[0]).join('').substring(0,2);
+                    sidebarAvatar.innerHTML = initials;
+                }
+                // Profile section update
+                updateProfileSection();
+            }
+        }
+
+        function updateProfileSection() {
+            if(!currentUser) return;
+            document.getElementById('profileName').textContent = currentUser.name;
+            document.getElementById('profileRoleText').textContent = currentUser.role === 'admin' ? '🛡️ Yönetici' : '🎓 Öğrenci';
+            const initials = currentUser.name.split(' ').map(n=>n[0]).join('').substring(0,2);
+            const bigAvatar = document.getElementById('profileAvatarBig');
+            const initialsEl = document.getElementById('profileAvatarInitials');
+            if(currentUser.photo) {
+                initialsEl.outerHTML = `<img src="${currentUser.photo}" id="profileAvatarInitials" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">`;
+            } else {
+                const el = document.getElementById('profileAvatarInitials');
+                if(el.tagName === 'IMG') {
+                    el.outerHTML = `<span id="profileAvatarInitials">${initials}</span>`;
+                } else {
+                    el.textContent = initials;
+                }
+            }
+        }
+
+        function handleProfilePhoto(input) {
+            if(!input.files[0] || !currentUser || !db) return;
+            const reader = new FileReader();
+            reader.onload = ev => {
+                // Küçük resme dönüştür
+                const img = new Image();
+                img.onload = () => {
+                    const canvas = document.createElement('canvas');
+                    const size = 120;
+                    canvas.width = size; canvas.height = size;
+                    const ctx = canvas.getContext('2d');
+                    const min = Math.min(img.width, img.height);
+                    ctx.drawImage(img, (img.width-min)/2, (img.height-min)/2, min, min, 0, 0, size, size);
+                    const dataUrl = canvas.toDataURL('image/jpeg', 0.7);
+                    db.ref('class9d/users/' + currentUser.key + '/photo').set(dataUrl);
+                    currentUser.photo = dataUrl;
+                    localStorage.setItem('9d_session', JSON.stringify(currentUser));
+                    updateAuthUI();
+                };
+                img.src = ev.target.result;
+            };
+            reader.readAsDataURL(input.files[0]);
+        }
+
+        function changePassword() {
+            if(!currentUser || !db) return;
+            const old = document.getElementById('oldPassword').value;
+            const nw = document.getElementById('newPassword').value;
+            const nw2 = document.getElementById('newPassword2').value;
+            if(!old || !nw || !nw2) { alert('Tüm alanları doldurun.'); return; }
+            if(nw !== nw2) { alert('Yeni şifreler eşleşmiyor.'); return; }
+            if(nw.length < 4) { alert('Şifre en az 4 karakter olmalı.'); return; }
+            db.ref('class9d/users/' + currentUser.key + '/password').once('value', snap => {
+                if(snap.val() !== old) { alert('Mevcut şifre yanlış.'); return; }
+                db.ref('class9d/users/' + currentUser.key + '/password').set(nw, err => {
+                    if(err) { alert('Hata: ' + err.message); return; }
+                    alert('✅ Şifreniz güncellendi!');
+                    document.getElementById('oldPassword').value = '';
+                    document.getElementById('newPassword').value = '';
+                    document.getElementById('newPassword2').value = '';
+                });
+            });
+        }
+
+        // ===================== ADMIN PANEL =====================
+        function setupAdminListeners() {
+            if(!db || currentUser?.role !== 'admin') return;
+
+            // Pending items
+            db.ref('class9d/pending').on('value', snap => {
+                const data = snap.val() || {};
+                let total = 0;
+                const items = [];
+                Object.entries(data).forEach(([type, entries]) => {
+                    Object.entries(entries).forEach(([id, val]) => {
+                        items.push({id, type, ...val});
+                        total++;
+                    });
+                });
+                items.sort((a,b) => new Date(b.date) - new Date(a.date));
+
+                const badge = document.getElementById('pendingBadge');
+                badge.style.display = total > 0 ? 'flex' : 'none';
+                badge.textContent = total;
+                document.getElementById('pendingCountText').textContent = total + ' bekleyen istek';
+
+                const list = document.getElementById('pendingList');
+                if(items.length === 0) {
+                    list.innerHTML = '<div class="empty-state" style="padding:2rem;"><i class="fas fa-check-circle" style="color:var(--success)"></i><h3>Bekleyen istek yok</h3></div>';
+                } else {
+                    const typeLabels = {homework:'Ödev/Sınav',note:'Ders Notu',announcement:'Duyuru',question:'Soru',suggestion:'Öneri',memory:'Anı',poll:'Anket'};
+                    list.innerHTML = items.map(item => `
+                        <div class="pending-card">
+                            <div style="display:flex; justify-content:space-between; align-items:flex-start; flex-wrap:wrap; gap:0.5rem;">
+                                <div>
+                                    <span class="badge badge-warning" style="margin-bottom:0.4rem;">${typeLabels[item.type]||item.type}</span>
+                                    <div style="font-weight:700;">${item.title || item.desc || '(İsimsiz)'}</div>
+                                    <div style="font-size:0.8rem; color:var(--text-muted); margin-top:0.2rem;">
+                                        <i class="fas fa-user"></i> ${item.author || item.submittedBy || '?'} &nbsp;
+                                        <i class="fas fa-clock"></i> ${new Date(item.date).toLocaleDateString('tr-TR')}
+                                    </div>
+                                    ${item.content ? `<div style="font-size:0.85rem; margin-top:0.4rem; color:var(--text-muted);">${item.content.substring(0,100)}${item.content.length>100?'...':''}</div>` : ''}
+                                </div>
+                            </div>
+                            <div class="pending-actions">
+                                <button class="btn btn-success btn-sm" onclick="approvePending('${item.type}','${item.id}')"><i class="fas fa-check"></i> Onayla</button>
+                                <button class="btn btn-danger btn-sm" onclick="rejectPending('${item.type}','${item.id}')"><i class="fas fa-times"></i> Reddet</button>
+                            </div>
+                        </div>
+                    `).join('');
+                }
+            });
+
+            // User list
+            db.ref('class9d/users').on('value', snap => {
+                const data = snap.val() || {};
+                const users = Object.entries(data).map(([key,val]) => ({key,...val}));
+                const list = document.getElementById('userList');
+                list.innerHTML = users.map(u => `
+                    <div class="user-row">
+                        <div class="user-avatar-lg">
+                            ${u.photo ? `<img src="${u.photo}">` : (u.name||'?').split(' ').map(n=>n[0]).join('').substring(0,2)}
+                        </div>
+                        <div style="flex:1; min-width:0;">
+                            <div style="font-weight:600; font-size:0.9rem;">${u.name}</div>
+                            <div style="font-size:0.78rem; color:var(--text-muted);">${u.role==='admin'?'🛡️ Admin':'🎓 Öğrenci'}</div>
+                        </div>
+                        ${u.role !== 'admin' ? `<button class="btn btn-danger btn-sm" onclick="removeStudent('${u.key}')"><i class="fas fa-trash"></i></button>` : ''}
+                    </div>
+                `).join('');
+            });
+        }
+
+        function approvePending(type, id) {
+            if(!db) return;
+            db.ref('class9d/pending/' + type + '/' + id).once('value', snap => {
+                const item = snap.val();
+                if(!item) return;
+                const dest = type === 'homework' ? 'class9d/homework'
+                    : type === 'note' ? 'class9d/notes'
+                    : type === 'announcement' ? 'class9d/announcements'
+                    : type === 'question' ? 'class9d/questions'
+                    : type === 'suggestion' ? 'class9d/suggestions'
+                    : type === 'memory' ? 'class9d/memories'
+                    : type === 'poll' ? 'class9d/polls' : null;
+                if(!dest) return;
+                db.ref(dest).push(item);
+                db.ref('class9d/pending/' + type + '/' + id).remove();
+            });
+        }
+
+        function rejectPending(type, id) {
+            if(confirm('Bu isteği reddetmek istediğinize emin misiniz?')) {
+                db.ref('class9d/pending/' + type + '/' + id).remove();
+            }
+        }
+
+        function addStudent(e) {
+            e.preventDefault();
+            if(!db) { alert('Firebase bağlı değil.'); return; }
+            const name = document.getElementById('newStudentName').value.trim();
+            const pass = document.getElementById('newStudentPass').value.trim();
+            const key = nameToKey(name);
+            db.ref('class9d/users/' + key).set({ name, role: 'student', password: pass }, err => {
+                if(err) alert('Hata: ' + err.message);
+                else { closeModal('addUserModal'); e.target.reset(); }
+            });
+        }
+
+        function removeStudent(key) {
+            if(confirm('Bu öğrenciyi silmek istediğinize emin misiniz?')) {
+                db.ref('class9d/users/' + key).remove();
+            }
+        }
+
+        // ===================== SAVE WITH PENDING SYSTEM =====================
+        // Giriş yapılmış kullanıcı admin değilse pending'e gönder
+        function saveOrPend(type, data, successCb) {
+            if(!db) { alert('Firebase bağlı değil.'); return; }
+            if(currentUser && currentUser.role === 'admin') {
+                const ref = type === 'homework' ? 'class9d/homework'
+                    : type === 'note' ? 'class9d/notes'
+                    : type === 'announcement' ? 'class9d/announcements'
+                    : type === 'question' ? 'class9d/questions'
+                    : type === 'suggestion' ? 'class9d/suggestions'
+                    : type === 'poll' ? 'class9d/polls' : null;
+                if(ref) db.ref(ref).push(data, err => { if(!err && successCb) successCb(false); });
+            } else {
+                // Öğrenci veya misafir → pending
+                data.submittedBy = currentUser ? currentUser.name : 'Misafir';
+                data.pendingDate = new Date().toISOString();
+                db.ref('class9d/pending/' + type).push(data, err => { if(!err && successCb) successCb(true); });
+            }
+        }
+
+        // Restore session from localStorage
+        function restoreSession() {
+            try {
+                const saved = localStorage.getItem('9d_session');
+                if(saved) {
+                    currentUser = JSON.parse(saved);
+                    updateAuthUI();
+                    if(currentUser.role === 'admin') setupAdminListeners();
+                }
+            } catch(e) { localStorage.removeItem('9d_session'); }
+        }
+
         // ===================== DATA =====================
         const scheduleData = {
             "Pazartesi": [
@@ -1181,13 +1733,15 @@
             renderTeachers();
             setupRealtimeListeners();
             updateTodaySchedule();
-            // Populate suggestion lesson select
             const sugSel = document.getElementById('sugLesson');
             if(sugSel) {
                 Object.entries(lessonsInfo).forEach(([code, info]) => {
                     sugSel.innerHTML += `<option value="${code}">${code} - ${info.name}</option>`;
                 });
             }
+            // Auth
+            restoreSession();
+            initUsers();
             // Firebase'den Gemini API anahtarını yükle
             loadApiKeyFromFirebase();
         }
@@ -1450,18 +2004,21 @@
 
         function saveHomework(e) {
             e.preventDefault();
-            if(!db){alert('Firebase yapılandırması eksik. Config dosyasını doldurun.');return;}
-            const newRef = db.ref('class9d/homework').push();
-            newRef.set({
+            if(!currentUser) { alert('Bu işlem için giriş yapmalısınız.'); return; }
+            const data = {
                 title: document.getElementById('hwTitle').value,
                 lesson: document.getElementById('hwLesson').value,
                 type: document.getElementById('hwType').value,
                 date: document.getElementById('hwDate').value,
                 desc: document.getElementById('hwDesc').value,
+                author: currentUser.name,
                 created: new Date().toISOString()
+            };
+            saveOrPend('homework', data, isPending => {
+                closeModal('homeworkModal');
+                e.target.reset();
+                if(isPending) alert('✅ İsteğiniz yöneticiye gönderildi, onaylandıktan sonra yayınlanacak.');
             });
-            closeModal('homeworkModal');
-            e.target.reset();
         }
 
         function deleteHomework(id) {
@@ -1497,16 +2054,18 @@
 
         function saveAnnouncement(e) {
             e.preventDefault();
-            if(!db){alert('Firebase yapılandırması eksik. Config dosyasını doldurun.');return;}
-            const newRef = db.ref('class9d/announcements').push();
-            newRef.set({
+            if(!currentUser) { alert('Bu işlem için giriş yapmalısınız.'); return; }
+            const data = {
                 title: document.getElementById('annTitle').value,
                 content: document.getElementById('annContent').value,
-                author: document.getElementById('annAuthor').value,
+                author: currentUser.name,
                 date: new Date().toISOString()
+            };
+            saveOrPend('announcement', data, isPending => {
+                closeModal('announcementModal');
+                e.target.reset();
+                if(isPending) alert('✅ Duyuru isteğiniz yöneticiye gönderildi.');
             });
-            closeModal('announcementModal');
-            e.target.reset();
         }
 
         function deleteAnnouncement(id) {
@@ -1545,27 +2104,28 @@
 
         function saveNote(e) {
             e.preventDefault();
+            if(!currentUser) { alert('Bu işlem için giriş yapmalısınız.'); return; }
             const fileInput = document.getElementById('noteFile');
-            const saveData = (fileData) => {
-                if(!db){alert('Firebase yapılandırması eksik. Config dosyasını doldurun.');return;}
-            const newRef = db.ref('class9d/notes').push();
-                newRef.set({
+            const doSave = (fileData) => {
+                const data = {
                     title: document.getElementById('noteTitle').value,
                     lesson: document.getElementById('noteLesson').value,
                     desc: document.getElementById('noteDesc').value,
                     fileData: fileData,
+                    author: currentUser.name,
                     date: new Date().toISOString()
+                };
+                saveOrPend('note', data, isPending => {
+                    closeModal('noteModal');
+                    e.target.reset();
+                    if(isPending) alert('✅ Not isteğiniz yöneticiye gönderildi.');
                 });
-                closeModal('noteModal');
-                e.target.reset();
             };
             if(fileInput.files[0]) {
                 const reader = new FileReader();
-                reader.onload = (ev) => saveData(ev.target.result);
+                reader.onload = (ev) => doSave(ev.target.result);
                 reader.readAsDataURL(fileInput.files[0]);
-            } else {
-                saveData(null);
-            }
+            } else { doSave(null); }
         }
 
         function deleteNote(id) {
@@ -1618,17 +2178,19 @@
 
         function saveQuestion(e) {
             e.preventDefault();
-            if(!db){alert('Firebase yapılandırması eksik. Config dosyasını doldurun.');return;}
-            const newRef = db.ref('class9d/questions').push();
-            newRef.set({
+            if(!currentUser) { alert('Bu işlem için giriş yapmalısınız.'); return; }
+            const data = {
                 title: document.getElementById('qTitle').value,
                 lesson: document.getElementById('qLesson').value,
                 content: document.getElementById('qContent').value,
-                author: document.getElementById('qAuthor').value,
+                author: currentUser.name,
                 date: new Date().toISOString()
+            };
+            saveOrPend('question', data, isPending => {
+                closeModal('questionModal');
+                e.target.reset();
+                if(isPending) alert('✅ Sorunuz yöneticiye gönderildi.');
             });
-            closeModal('questionModal');
-            e.target.reset();
         }
 
         function deleteQuestion(id) {
@@ -1707,17 +2269,20 @@
 
         function savePoll(e) {
             e.preventDefault();
+            if(!currentUser) { alert('Bu işlem için giriş yapmalısınız.'); return; }
             const options = document.getElementById('pollOptions').value.split('\n').filter(o => o.trim()).map(o => ({text: o.trim(), votes: 0}));
             if(options.length < 2) { alert('En az 2 seçenek girmelisiniz!'); return; }
-            if(!db){alert('Firebase yapılandırması eksik. Config dosyasını doldurun.');return;}
-            const newRef = db.ref('class9d/polls').push();
-            newRef.set({
+            const data = {
                 question: document.getElementById('pollQuestion').value,
                 options: options,
+                author: currentUser.name,
                 date: new Date().toISOString()
+            };
+            saveOrPend('poll', data, isPending => {
+                closeModal('pollModal');
+                e.target.reset();
+                if(isPending) alert('✅ Anket isteğiniz yöneticiye gönderildi.');
             });
-            closeModal('pollModal');
-            e.target.reset();
         }
 
         function votePoll(id, oIdx) {
@@ -2031,18 +2596,20 @@ Kısa, sıcak ve yardımcı cevaplar ver. Emoji kullanabilirsin. Yalnızca Türk
 
         function saveSuggestion(e) {
             e.preventDefault();
-            if(!db){alert('Firebase yapılandırması eksik. Config dosyasını doldurun.');return;}
-            const newRef = db.ref('class9d/suggestions').push();
-            newRef.set({
+            if(!currentUser) { alert('Bu işlem için giriş yapmalısınız.'); return; }
+            const data = {
                 title: document.getElementById('sugTitle').value,
                 type: document.getElementById('sugType').value,
                 lesson: document.getElementById('sugLesson').value,
                 comment: document.getElementById('sugComment').value,
-                author: document.getElementById('sugAuthor').value,
+                author: currentUser.name,
                 date: new Date().toISOString()
+            };
+            saveOrPend('suggestion', data, isPending => {
+                closeModal('suggestionModal');
+                e.target.reset();
+                if(isPending) alert('✅ Öneriniz yöneticiye gönderildi.');
             });
-            closeModal('suggestionModal');
-            e.target.reset();
         }
 
         function deleteSuggestion(id) {
@@ -2057,14 +2624,79 @@ Kısa, sıcak ve yardımcı cevaplar ver. Emoji kullanabilirsin. Yalnızca Türk
         // ===================== TEACHERS =====================
         function renderTeachers() {
             const grid = document.getElementById('teacherGrid');
-            grid.innerHTML = Object.entries(lessonsInfo).map(([code, info]) => `
-                <div class="teacher-card">
-                    <div class="teacher-avatar">${info.teacher.split(' ').map(n => n[0]).join('').substring(0,2)}</div>
-                    <div class="teacher-name-card">${info.teacher}</div>
-                    <div class="teacher-lesson">${info.name}</div>
-                    <div class="teacher-hours">${info.hours} Saat / Hafta</div>
+            // Group by teacher name (a teacher may teach multiple subjects)
+            const teacherMap = {};
+            Object.entries(lessonsInfo).forEach(([code, info]) => {
+                const key = info.teacher;
+                if(!teacherMap[key]) teacherMap[key] = { teacher: info.teacher, lessons: [], totalHours: 0 };
+                teacherMap[key].lessons.push({ code, name: info.name, hours: info.hours });
+                teacherMap[key].totalHours += info.hours;
+            });
+
+            grid.innerHTML = Object.values(teacherMap).map(t => `
+                <div class="teacher-card" onclick="showTeacherDetail('${t.teacher.replace(/'/g,"\\'")}')">
+                    <div class="teacher-avatar">${t.teacher.split(' ').map(n => n[0]).join('').substring(0,2)}</div>
+                    <div class="teacher-name-card">${t.teacher}</div>
+                    <div class="teacher-lesson">${t.lessons.map(l=>l.name).join(', ')}</div>
+                    <div class="teacher-hours">${t.totalHours} Saat / Hafta</div>
+                    <div style="margin-top:0.75rem; font-size:0.75rem; color:var(--primary); font-weight:600;">
+                        <i class="fas fa-info-circle"></i> Detay için tıkla
+                    </div>
                 </div>
             `).join('');
+        }
+
+        function showTeacherDetail(teacherName) {
+            const modal = document.getElementById('teacherDetailModal');
+            document.getElementById('tdModalTitle').innerHTML =
+                `<i class="fas fa-chalkboard-teacher" style="color:var(--primary)"></i> ${teacherName}`;
+
+            // Öğretmenin verdiği dersler
+            const teacherLessons = Object.entries(lessonsInfo)
+                .filter(([,info]) => info.teacher === teacherName)
+                .map(([code, info]) => ({ code, ...info }));
+
+            // Ders programındaki tüm saatleri bul
+            const schedule = [];
+            Object.entries(scheduleData).forEach(([day, lessons]) => {
+                lessons.forEach(lesson => {
+                    if(lesson.teacher === teacherName) {
+                        schedule.push({ day, time: lesson.time, lesson: lesson.lesson });
+                    }
+                });
+            });
+
+            const initials = teacherName.split(' ').map(n => n[0]).join('').substring(0,2);
+            const totalHours = teacherLessons.reduce((s, l) => s + l.hours, 0);
+
+            document.getElementById('teacherDetailContent').innerHTML = `
+                <div style="display:flex; align-items:center; gap:1.25rem; margin-bottom:1.5rem; flex-wrap:wrap;">
+                    <div style="width:70px;height:70px;border-radius:50%;background:linear-gradient(135deg,var(--primary),var(--secondary));display:flex;align-items:center;justify-content:center;font-size:1.5rem;font-weight:700;color:white;flex-shrink:0;">${initials}</div>
+                    <div>
+                        <div style="font-size:1.25rem;font-weight:800;">${teacherName}</div>
+                        <div style="color:var(--text-muted);font-size:0.9rem;">${teacherLessons.map(l=>l.name).join(' / ')}</div>
+                        <div style="margin-top:0.4rem;"><span class="badge badge-primary"><i class="fas fa-clock"></i> Haftada ${totalHours} saat</span></div>
+                    </div>
+                </div>
+
+                <div style="font-weight:700; margin-bottom:0.75rem; font-size:0.95rem;">📅 Haftalık Ders Programı</div>
+                ${schedule.length > 0 ? schedule.map(s => `
+                    <div class="teacher-schedule-row">
+                        <span class="teacher-schedule-day"><i class="fas fa-calendar-day"></i> ${s.day}</span>
+                        <span style="color:var(--text-muted);">${s.time}</span>
+                        <span class="badge badge-primary">${s.lesson}</span>
+                    </div>
+                `).join('') : '<div style="color:var(--text-muted);font-size:0.85rem;">Bu haftaki programda ders görünmüyor.</div>'}
+
+                <div style="font-weight:700; margin-top:1.25rem; margin-bottom:0.75rem; font-size:0.95rem;">📚 Verdiği Dersler</div>
+                ${teacherLessons.map(l => `
+                    <div style="display:flex;justify-content:space-between;align-items:center;padding:0.6rem 0.875rem;background:var(--surface-light);border-radius:10px;margin-bottom:0.4rem;font-size:0.85rem;">
+                        <span><strong>${l.code}</strong> — ${l.name}</span>
+                        <span class="badge badge-success">${l.hours} saat</span>
+                    </div>
+                `).join('')}
+            `;
+            openModal('teacherDetailModal');
         }
 
         // ===================== MODALS =====================
