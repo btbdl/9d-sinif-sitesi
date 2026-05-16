@@ -895,7 +895,7 @@
                     <button class="btn btn-primary" id="addExamBtn" onclick="openModal('examModal')"><i class="fas fa-plus"></i> Senaryo Ekle</button>
                 </div>
                 <p style="color:var(--text-muted); margin-bottom:1.25rem; font-size:0.9rem;">Sınav döneminde konu dağılımı, soru yapısı ve sınav senaryoları burada paylaşılır. 📋</p>
-                <div class="item-list" id="examList"><div class="loading-spinner"></div> Yükleniyor...</div>
+                <div class="item-list" id="examList"></div>
             </section>
 
             <!-- Homework -->
@@ -1042,7 +1042,7 @@
                     <button class="filter-btn" onclick="filterSuggestions('okuma', this)">📖 Okuma Kitabı</button>
                     <button class="filter-btn" onclick="filterSuggestions('kaynak', this)">📘 Kaynak Kitap</button>
                 </div>
-                <div class="item-list" id="suggestionsList"><div class="loading-spinner"></div> Yükleniyor...</div>
+                <div class="item-list" id="suggestionsList"></div>
             </section>
 
             <!-- Profile Section -->
@@ -1903,6 +1903,7 @@
                 renderPolls([]);
                 renderMemories([]);
                 renderSuggestions();
+                renderExams([]);
                 updateDashboardCounts();
                 return;
             }
@@ -2760,7 +2761,8 @@
         let currentFilter = 'tümü';
 
         function setupSuggestionsListener() {
-            if(!db) { renderSuggestions(); return; }
+            renderSuggestions(); // Önce boş render (spinner'ı kaldır)
+            if(!db) return;
             db.ref('class9d/suggestions').on('value', (snap) => {
                 const data = snap.val() || {};
                 allSuggestions = Object.entries(data).map(([id, val]) => ({id, ...val})).reverse();
@@ -2826,8 +2828,10 @@
                 db.ref('class9d/suggestions/' + id).remove();
             }
             // Exams
+            renderExams([]); // Önce boş render et
             db.ref('class9d/exams').on('value', snap => {
-                window._cachedExams = Object.entries(snap.val()||{}).map(([id,v])=>({id,...v}));
+                const data = snap.val() || {};
+                window._cachedExams = Object.entries(data).map(([id,v])=>({id,...v}));
                 renderExams(window._cachedExams);
             });
 
@@ -2943,18 +2947,27 @@
                 const ref = currentUser.role === 'admin'
                     ? db.ref('class9d/exams').push()
                     : db.ref('class9d/pending/exam').push();
-                ref.set(data, err => {
+                const uploadPromise = new Promise((resolve, reject) => {
+                    ref.set(data, err => err ? reject(err) : resolve());
+                });
+                uploadPromise.then(() => {
                     document.getElementById('examProgressBar').style.width = '100%';
-                    document.getElementById('examProgressText').textContent = err ? 'Hata!' : 'Yüklendi!';
+                    document.getElementById('examProgressText').textContent = 'Tamamlandı!';
                     setTimeout(() => {
-                        btn.disabled = false; btn.innerHTML = '<i class="fas fa-cloud-upload-alt"></i> Yükle';
+                        btn.disabled = false;
+                        btn.innerHTML = '<i class="fas fa-cloud-upload-alt"></i> Yükle';
                         document.getElementById('examUploadProgress').style.display = 'none';
                         document.getElementById('examFileInfo').style.display = 'none';
                         closeModal('examModal');
                         ev.target.reset();
-                        if(err) alert('Hata: ' + err.message);
-                        else if(currentUser.role !== 'admin') alert('PDF admin onayına gönderildi!');
-                    }, 800);
+                        if(currentUser.role !== 'admin') alert('PDF admin onayına gönderildi!');
+                    }, 600);
+                }).catch(err => {
+                    document.getElementById('examProgressBar').style.width = '100%';
+                    document.getElementById('examProgressBar').style.background = 'var(--danger)';
+                    document.getElementById('examProgressText').textContent = 'Hata: ' + err.message;
+                    btn.disabled = false;
+                    btn.innerHTML = '<i class="fas fa-cloud-upload-alt"></i> Tekrar Dene';
                 });
             };
             reader.readAsDataURL(file);
