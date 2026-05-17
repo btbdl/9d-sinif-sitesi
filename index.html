@@ -789,7 +789,6 @@
                 <li class="nav-item"><button class="nav-link active" onclick="showSection('dashboard', this)"><i class="fas fa-home"></i> Ana Sayfa</button></li>
                 <li class="nav-item"><button class="nav-link" onclick="showSection('schedule', this)"><i class="fas fa-calendar-alt"></i> Ders Programı</button></li>
                 <li class="nav-item"><button class="nav-link" onclick="showSection('homework', this)"><i class="fas fa-tasks"></i> Ödev & Sınav</button></li>
-                <li class="nav-item"><button class="nav-link" onclick="showSection('exams', this)"><i class="fas fa-file-alt"></i> Sınav Senaryoları</button></li>
                 <li class="nav-item"><button class="nav-link" onclick="showSection('notes', this)"><i class="fas fa-book"></i> Ders Notları</button></li>
                 <li class="nav-item"><button class="nav-link" onclick="showSection('archive', this)"><i class="fas fa-folder-open"></i> Arşiv</button></li>
                 <li class="nav-item"><button class="nav-link" onclick="showSection('qa', this)"><i class="fas fa-question-circle"></i> Soru-Cevap</button></li>
@@ -832,25 +831,25 @@
                     <div class="tomorrow-lessons" id="tomorrowLessons"></div>
                 </div>
                 <div class="card-grid">
-                    <div class="card">
+                    <div class="card" style="cursor:pointer;transition:transform 0.15s" onmouseover="this.style.transform='translateY(-2px)'" onmouseout="this.style.transform='none'" onclick="showSection('schedule', document.querySelector('[onclick*=schedule]'))">
                         <div class="card-header">
                             <div><div class="card-title">Bugünkü Ders</div><div class="card-value" id="todayLessonCount">0</div><div class="card-desc">ders var</div></div>
                             <div class="card-icon icon-blue"><i class="fas fa-book-open"></i></div>
                         </div>
                     </div>
-                    <div class="card">
+                    <div class="card" style="cursor:pointer;transition:transform 0.15s" onmouseover="this.style.transform='translateY(-2px)'" onmouseout="this.style.transform='none'" onclick="showSection('homework', document.querySelector('[onclick*=homework]'))">
                         <div class="card-header">
                             <div><div class="card-title">Bekleyen Ödev</div><div class="card-value" id="pendingHomework">0</div><div class="card-desc">tamamlanmadı</div></div>
                             <div class="card-icon icon-pink"><i class="fas fa-clipboard-list"></i></div>
                         </div>
                     </div>
-                    <div class="card">
+                    <div class="card" style="cursor:pointer;transition:transform 0.15s" onmouseover="this.style.transform='translateY(-2px)'" onmouseout="this.style.transform='none'" onclick="showSection('announcements', document.querySelector('[onclick*=announcements]'))">
                         <div class="card-header">
                             <div><div class="card-title">Yeni Duyuru</div><div class="card-value" id="newAnnouncements">0</div><div class="card-desc">bu hafta</div></div>
                             <div class="card-icon icon-cyan"><i class="fas fa-bullhorn"></i></div>
                         </div>
                     </div>
-                    <div class="card">
+                    <div class="card" style="cursor:pointer;transition:transform 0.15s" onmouseover="this.style.transform='translateY(-2px)'" onmouseout="this.style.transform='none'" onclick="showSection('polls', document.querySelector('[onclick*=polls]'))">
                         <div class="card-header">
                             <div><div class="card-title">Aktif Anket</div><div class="card-value" id="activePolls">0</div><div class="card-desc">oylamaya açık</div></div>
                             <div class="card-icon icon-orange"><i class="fas fa-poll"></i></div>
@@ -887,24 +886,23 @@
                 </div>
             </section>
 
+            <!-- Homework -->
 
-            <!-- Sınav Senaryoları -->
             <section id="exams" class="section">
-                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1.5rem; flex-wrap:wrap; gap:1rem;">
+                <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1.5rem;flex-wrap:wrap;gap:1rem;">
                     <div class="section-title" style="margin:0"><i class="fas fa-file-alt"></i> Sınav Senaryoları</div>
-                    <button class="btn btn-primary" id="addExamBtn" onclick="openModal('examModal')"><i class="fas fa-plus"></i> Senaryo Ekle</button>
+                    <button class="btn btn-primary" id="addExamBtn" style="display:none" onclick="openModal('examModal')"><i class="fas fa-plus"></i> Senaryo Yükle</button>
                 </div>
-                <p style="color:var(--text-muted); margin-bottom:1.25rem; font-size:0.9rem;">Sınav döneminde konu dağılımı, soru yapısı ve sınav senaryoları burada paylaşılır. 📋</p>
+                <p style="color:var(--text-muted);margin-bottom:1.25rem;font-size:0.9rem;">Sınav döneminde konu dağılımı ve PDF senaryolar burada paylaşılır.</p>
                 <div class="item-list" id="examList"></div>
             </section>
 
-            <!-- Homework -->
             <section id="homework" class="section">
                 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
                     <div class="section-title" style="margin:0"><i class="fas fa-tasks"></i> Ödev & Sınav Takvimi</div>
                     <button class="btn btn-primary" onclick="openModal('homeworkModal')"><i class="fas fa-plus"></i> Yeni Ekle</button>
                 </div>
-                <div class="item-list" id="homeworkList"><div class="loading-spinner"></div> Yükleniyor...</div>
+                <div class="item-list" id="homeworkList"><div class="loading-spinner"></div> Yükl
             </section>
 
             <!-- Notes -->
@@ -1042,7 +1040,7 @@
                     <button class="filter-btn" onclick="filterSuggestions('okuma', this)">📖 Okuma Kitabı</button>
                     <button class="filter-btn" onclick="filterSuggestions('kaynak', this)">📘 Kaynak Kitap</button>
                 </div>
-                <div class="item-list" id="suggestionsList"></div>
+                <div class="item-list" id="suggestionsList"><div class="loading-spinner"></div> Yükleniyor...</div>
             </section>
 
             <!-- Profile Section -->
@@ -1231,37 +1229,31 @@
     <div class="modal-overlay" id="examModal">
         <div class="modal">
             <div class="modal-header">
-                <div class="modal-title"><i class="fas fa-file-alt"></i> Sınav Senaryosu Yükle</div>
+                <div class="modal-title"><i class="fas fa-file-alt"></i> Sınav Senaryosu Yukle</div>
                 <button class="modal-close" onclick="closeModal('examModal')"><i class="fas fa-times"></i></button>
             </div>
             <form onsubmit="saveExam(event)">
                 <div class="form-group">
                     <label class="form-label">Ders</label>
-                    <select class="form-control" id="examLesson" required>
-                        <option value="">Seçin...</option>
-                    </select>
+                    <select class="form-control" id="examLesson" required><option value="">Secin...</option></select>
                 </div>
                 <div class="form-group">
-                    <label class="form-label">PDF Dosyası</label>
-                    <input type="file" class="form-control" id="examFile" accept=".pdf" required
-                        style="padding:0.6rem;"
-                        onchange="handleExamFileSelect(this)">
-                    <div id="examFileInfo" style="margin-top:0.5rem; font-size:0.82rem; color:var(--text-muted); display:none;">
-                        <i class="fas fa-file-pdf" style="color:#ef4444;"></i> <span id="examFileName"></span>
-                        &nbsp;·&nbsp; <span id="examFileSize"></span>
+                    <label class="form-label">PDF Dosyasi</label>
+                    <input type="file" class="form-control" id="examFile" accept=".pdf" required style="padding:0.6rem" onchange="handleExamFile(this)">
+                    <div id="examFileInfo" style="display:none;margin-top:0.5rem;font-size:0.82rem;color:var(--text-muted);">
+                        <i class="fas fa-file-pdf" style="color:#ef4444"></i>
+                        <span id="examFileName"></span> &middot; <span id="examFileSize"></span>
                     </div>
-                    <small style="color:var(--text-muted); font-size:0.78rem; display:block; margin-top:0.35rem;">
-                        <i class="fas fa-info-circle"></i> Maksimum 5 MB. Firebase'de base64 olarak saklanır.
-                    </small>
+                    <small style="color:var(--text-muted);font-size:0.78rem;display:block;margin-top:0.3rem;"><i class="fas fa-info-circle"></i> Maks. 5 MB PDF</small>
                 </div>
-                <div id="examUploadProgress" style="display:none; margin-top:0.5rem;">
-                    <div style="height:6px; background:var(--surface-light); border-radius:3px; overflow:hidden;">
-                        <div id="examProgressBar" style="height:100%; width:0%; background:var(--primary); border-radius:3px; transition:width 0.3s;"></div>
+                <div id="examProgress" style="display:none;margin-top:0.5rem;">
+                    <div style="height:6px;background:var(--surface-light);border-radius:3px;overflow:hidden;">
+                        <div id="examProgressBar" style="height:100%;width:0%;background:var(--primary);border-radius:3px;transition:width 0.3s;"></div>
                     </div>
-                    <div style="text-align:center; font-size:0.8rem; color:var(--text-muted); margin-top:0.3rem;" id="examProgressText">Yükleniyor...</div>
+                    <div style="text-align:center;font-size:0.8rem;color:var(--text-muted);margin-top:0.3rem;" id="examProgressText">Yukleniyor...</div>
                 </div>
-                <button type="submit" class="btn btn-primary" style="width:100%; margin-top:0.5rem;" id="examSubmitBtn">
-                    <i class="fas fa-cloud-upload-alt"></i> Yükle
+                <button type="submit" class="btn btn-primary" style="width:100%;margin-top:0.75rem;" id="examSubmitBtn">
+                    <i class="fas fa-cloud-upload-alt"></i> Yukle
                 </button>
             </form>
         </div>
@@ -1397,16 +1389,16 @@
 
         // Tüm öğrenci listesi (Abdullah Batu Baddal hariç - o admin)
         const DEFAULT_STUDENTS = [
-            'Abdullah Mert Türk', 'Ahmet Eymen Alkaptan', 'Ali Sarp Kaya',
-            'Aybüke Demirel', 'Beren Kılıç', 'Berhan Taşkın', 'Betül Akdağ',
-            'Beyza Erkut', 'Cennet Aydoğdu', 'Cennet Yağmur Akpınar',
-            'Elif Özay', 'Emine İnan', 'Enver Gürel',
-            'Etem Faruk Karaca', 'Fatima Zeynep Kahraman', 'Ferhat Ayvaz',
-            'Gülsüm Begüm Özdemir', 'Gürol Salih Sağır', 'Halil Göktuğ Aslantaş',
-            'Halise Ceren Uyan', 'Mete Aydın',
-            'Muhammed Emir Göksu', 'Osman Sunguralp Kılıç', 'ÖmerTaha Çelik',
-            'Ramazan Emir Kök', 'Sena Kansu', 'Sungur Alp Öztürk',
-            'Şerife Selma Dinler', 'Yiğit Kayra Canpolat', 'Zehra Keskin'
+            'Abdullah Mert Turk','Ahmet Eymen Alkaptan','Ali Sarp Kaya',
+            'Aybuke Demirel','Beren Kilic','Berhan Taskin','Betul Akdag',
+            'Beyza Erkut','Cennet Aydogdu','Cennet Yagmur Akpinar',
+            'Dilek Tutar','Elif Ozay','Emine Inan','Enver Gurel',
+            'Etem Faruk Karaca','Fatima Zeynep Kahraman','Ferhat Ayvaz',
+            'Gulsum Begum Ozdemir','Gurol Salih Sagir','Halil Goktug Aslantas',
+            'Halise Ceren Uyan','Hatice Ozek','Mete Aydin',
+            'Muhammed Emir Goksu','Osman Sunguralp Kilic','Omertaha Celik',
+            'Ramazan Emir Kok','Sena Kansu','Sungur Alp Ozturk',
+            'Serife Selma Dinler','Yigit Kayra Canpolat','Zehra Keskin'
         ];
         let currentUser = null; // {name, role, key, photo}
 
@@ -1545,8 +1537,8 @@
             if(dashEl && dashEl.classList.contains('active')) {
                 const titleEl = document.getElementById('page-title');
                 if(titleEl) titleEl.textContent = currentUser
-                    ? (() => { const h=getTodayHoliday(); return h ? currentUser.name.split(' ')[0]+', '+h.mesaj : 'Hoş Geldin, '+currentUser.name.split(' ')[0]+'! 👋'; })()
-                    : (() => { const h=getTodayHoliday(); return h ? h.mesaj : 'Hoş Geldin, 9-D! 👋'; })();
+                    ? (function(){ var h=getTodayHoliday(); if(h){ var p=h.split(' - '); return currentUser.name.split(' ')[0]+', '+p[1]; } return 'Hos Geldin, '+currentUser.name.split(' ')[0]+'!'; })()
+                    : (function(){ var h=getTodayHoliday(); return h ? h.split(' - ')[1] : 'Hos Geldin, 9-D!'; })();
             }
         }
 
@@ -1693,7 +1685,6 @@
                     : type === 'question' ? 'class9d/questions'
                     : type === 'suggestion' ? 'class9d/suggestions'
                     : type === 'memory' ? 'class9d/memories'
-                    : type === 'exam' ? 'class9d/exams'
                     : type === 'poll' ? 'class9d/polls' : null;
                 if(!dest) return;
                 db.ref(dest).push(item);
@@ -1854,8 +1845,13 @@
 
         // ===================== INIT =====================
         function init() {
+            window._cachedHomework=[];window._cachedAnnouncements=[];window._cachedNotes=[];
+            window._cachedQA=[];window._cachedPolls=[];window._cachedMemories=[];
+            window._cachedSuggestions=[];window._cachedExams=[];
             document.getElementById('current-date').textContent = new Date().toLocaleDateString('tr-TR', {weekday: 'long', year: 'numeric', month: 'long', day: 'numeric'});
             populateLessonSelects();
+            var esl=document.getElementById('examLesson');
+            if(esl){ Object.entries(lessonsInfo).forEach(function(en){ var o=document.createElement('option'); o.value=en[0]+' - '+en[1].name; o.textContent=o.value; esl.appendChild(o); }); }
             renderScheduleTable();
             renderTeachers();
             setupRealtimeListeners();
@@ -1869,13 +1865,6 @@
             // Auth
             restoreSession();
             initUsers();
-            // Exam ders seçeneği doldur
-            const examLessonSel = document.getElementById('examLesson');
-            if(examLessonSel) {
-                Object.entries(lessonsInfo).forEach(([code, info]) => {
-                    examLessonSel.innerHTML += `<option value="${code} - ${info.name}">${code} - ${info.name}</option>`;
-                });
-            }
             // Firebase'den Gemini API anahtarını yükle
             loadApiKeyFromFirebase();
         }
@@ -1912,7 +1901,7 @@
             db.ref('class9d/homework').on('value', (snap) => {
                 const data = snap.val() || {};
                 const list = Object.entries(data).map(([id, val]) => ({id, ...val}));
-                window._cachedHomework = list;
+                window._cachedHomework=list;
                 renderHomework(list);
                 updateDashboardCounts();
             });
@@ -1921,6 +1910,7 @@
             db.ref('class9d/announcements').on('value', (snap) => {
                 const data = snap.val() || {};
                 const list = Object.entries(data).map(([id, val]) => ({id, ...val}));
+                window._cachedAnnouncements=list;
                 renderAnnouncements(list);
                 updateDashboardCounts();
             });
@@ -1929,7 +1919,7 @@
             db.ref('class9d/notes').on('value', (snap) => {
                 const data = snap.val() || {};
                 const list = Object.entries(data).map(([id, val]) => ({id, ...val}));
-                window._cachedNotes = list;
+                window._cachedNotes=list;
                 renderNotes(list);
                 renderArchive(list);
             });
@@ -1938,7 +1928,7 @@
             db.ref('class9d/questions').on('value', (snap) => {
                 const data = snap.val() || {};
                 const list = Object.entries(data).map(([id, val]) => ({id, ...val}));
-                window._cachedQA = list;
+                window._cachedQA=list;
                 renderQA(list);
                 updateDashboardCounts();
             });
@@ -1947,6 +1937,7 @@
             db.ref('class9d/polls').on('value', (snap) => {
                 const data = snap.val() || {};
                 const list = Object.entries(data).map(([id, val]) => ({id, ...val}));
+                window._cachedPolls=list;
                 renderPolls(list);
                 updateDashboardCounts();
             });
@@ -1955,6 +1946,7 @@
             db.ref('class9d/memories').on('value', (snap) => {
                 const data = snap.val() || {};
                 const list = Object.entries(data).map(([id, val]) => ({id, ...val}));
+                window._cachedMemories=list;
                 renderMemories(list);
             });
 
@@ -1982,11 +1974,7 @@
                 btn.classList.add('active');
             }
             const titles = {
-                dashboard: (() => {
-                    const h = getTodayHoliday();
-                    if(h) return (currentUser ? currentUser.name.split(' ')[0] + ', ' : '') + h.mesaj;
-                    return currentUser ? ('Hoş Geldin, ' + currentUser.name.split(' ')[0] + '! 👋') : 'Hoş Geldin, 9-D! 👋';
-                })(),
+                dashboard: (function(){ var h=getTodayHoliday&&getTodayHoliday(); if(h){ var p=h.split(' - '); return (currentUser?currentUser.name.split(' ')[0]+', ':'')+p[1]; } return currentUser?'Hos Geldin, '+currentUser.name.split(' ')[0]+'! ': 'Hos Geldin, 9-D! '; })(),
                 schedule: 'Haftalık Ders Programı 📅',
                 homework: 'Ödev & Sınav Takvimi 📝',
                 exams: 'Sınav Senaryoları 📋',
@@ -2629,65 +2617,69 @@
             });
         }
 
-        // ===== RESMİ TATİLLER =====
-        const RESMI_TATILLER = {
-            '01/01': { ad: 'Yılbaşı', mesaj: '🎆 Yeni yılın kutlu olsun! Yeni yıl, yeni başarılar dileriz.' },
-            '23/04': { ad: 'Ulusal Egemenlik ve Çocuk Bayramı', mesaj: '🎈 23 Nisan Ulusal Egemenlik ve Çocuk Bayramın kutlu olsun!' },
-            '01/05': { ad: 'Emek ve Dayanışma Günü', mesaj: '🌹 1 Mayıs Emek ve Dayanışma Günün kutlu olsun!' },
-            '19/05': { ad: "Atatürk'ü Anma Gençlik ve Spor Bayramı", mesaj: "🏃 19 Mayıs Atatürk'ü Anma, Gençlik ve Spor Bayramın kutlu olsun!" },
-            '15/07': { ad: 'Demokrasi ve Millî Birlik Günü', mesaj: "🇹🇷 15 Temmuz Demokrasi ve Millî Birlik Günü'nü saygıyla anıyoruz." },
-            '30/08': { ad: 'Zafer Bayramı', mesaj: '🎖️ 30 Ağustos Zafer Bayramın kutlu olsun!' },
-            '29/10': { ad: 'Cumhuriyet Bayramı', mesaj: "🇹🇷 29 Ekim Cumhuriyet Bayramın kutlu olsun! Ne mutlu Türk'üm diyene." },
-            '20/03': { ad: 'Ramazan Bayramı (1. Gün)', mesaj: '🌙 Ramazan Bayramın mübarek olsun! Sevdiklerinle güzel bir bayram geçir.' },
-            '21/03': { ad: 'Ramazan Bayramı (2. Gün)', mesaj: '🌙 Ramazan Bayramının ikinci günü kutlu olsun!' },
-            '22/03': { ad: 'Ramazan Bayramı (3. Gün)', mesaj: '🌙 Ramazan Bayramının son günü kutlu olsun!' },
-            '27/05': { ad: 'Kurban Bayramı (1. Gün)', mesaj: '🐑 Kurban Bayramın mübarek olsun! Sevdiklerinle güzel vakit geçir.' },
-            '28/05': { ad: 'Kurban Bayramı (2. Gün)', mesaj: '🐑 Kurban Bayramının ikinci günü kutlu olsun!' },
-            '29/05': { ad: 'Kurban Bayramı (3. Gün)', mesaj: '🐑 Kurban Bayramının üçüncü günü kutlu olsun!' },
-            '30/05': { ad: 'Kurban Bayramı (4. Gün)', mesaj: '🐑 Kurban Bayramının son günü kutlu olsun!' },
+        // Resmi tatiller
+        var TATILLER = {
+            '01/01':'Yilbasi - Yeni yilin kutlu olsun!',
+            '23/04':'23 Nisan Ulusal Egemenlik ve Cocuk Bayrami - Kutlu olsun!',
+            '01/05':'1 Mayis Emek Gunu - Kutlu olsun!',
+            '19/05':'19 Mayis Genclik Bayrami - Kutlu olsun!',
+            '15/07':'15 Temmuz Demokrasi Gunu - Saygiyla aniyoruz.',
+            '30/08':'30 Agustos Zafer Bayrami - Kutlu olsun!',
+            '29/10':'29 Ekim Cumhuriyet Bayrami - Kutlu olsun!',
+            '20/03':'Ramazan Bayrami 1. gun - Mubarek olsun!',
+            '21/03':'Ramazan Bayrami 2. gun - Kutlu olsun!',
+            '22/03':'Ramazan Bayrami 3. gun - Kutlu olsun!',
+            '27/05':'Kurban Bayrami 1. gun - Mubarek olsun!',
+            '28/05':'Kurban Bayrami 2. gun - Kutlu olsun!',
+            '29/05':'Kurban Bayrami 3. gun - Kutlu olsun!',
+            '30/05':'Kurban Bayrami 4. gun - Kutlu olsun!'
         };
 
         function getTodayHoliday() {
-            const now = new Date();
-            const key = String(now.getDate()).padStart(2,'0') + '/' + String(now.getMonth()+1).padStart(2,'0');
-            return RESMI_TATILLER[key] || null;
+            var n=new Date();
+            var k=String(n.getDate()).padStart(2,'0')+'/'+String(n.getMonth()+1).padStart(2,'0');
+            return TATILLER[k]||null;
         }
 
         function buildSystemPrompt() {
-            const today = days[new Date().getDay()];
-            const holiday = getTodayHoliday();
-            const todaySchedule = holiday
-                ? ('Bugün resmi tatil: ' + holiday.ad + '. Okul yok.')
+            var today = days[new Date().getDay()];
+            var holiday = getTodayHoliday();
+            var todaySch = holiday ? ('Resmi tatil: '+holiday)
                 : (scheduleData[today]
-                    ? scheduleData[today].map(l => '  ' + l.time + ': ' + l.lesson + ' (' + l.teacher + ')').join('\n')
-                    : 'Bugün tatil.');
-            const allTeachers = Object.entries(lessonsInfo)
-                .map(([code, info]) => '  ' + code + ' (' + info.name + '): ' + info.teacher + ' — haftada ' + info.hours + ' saat')
-                .join('\n');
-            const fullSchedule = Object.entries(scheduleData).map(([day, lessons]) =>
-                day + ':\n' + lessons.map(l => '  ' + l.time + ': ' + l.lesson + ' (' + l.teacher + ')').join('\n')
-            ).join('\n\n');
+                    ? scheduleData[today].map(function(l){ return l.time+': '+l.lesson+'('+l.teacher+')'; }).join(' | ')
+                    : 'Tatil/hafta sonu');
+            var allSch = Object.entries(scheduleData).map(function(e){
+                return e[0]+': '+e[1].map(function(l){ return l.lesson+'('+l.teacher+')'; }).join(',');
+            }).join(' || ');
+            var tchr = Object.entries(lessonsInfo).map(function(e){
+                return e[0]+'='+e[1].teacher+'('+e[1].hours+'h)';
+            }).join(', ');
 
-            // Site içeriğini özet olarak ekle
-            let contentSummary = '';
-            const hw = window._cachedHomework || [];
-            const nt = window._cachedNotes || [];
-            const qa = window._cachedQA || [];
-            const ex = window._cachedExams || [];
-            if(hw.length) contentSummary += '\nSON ÖDEV/SINAVLAR:\n' + hw.slice(0,6).map(h => '  - ' + (h.lesson||'') + ' | ' + h.title + (h.dueDate?' ('+h.dueDate+')'  :'')).join('\n');
-            if(nt.length) contentSummary += '\nSON DERS NOTLARI:\n' + nt.slice(0,5).map(n => '  - ' + (n.lesson||'') + ': ' + n.title).join('\n');
-            if(qa.length) contentSummary += '\nSON SORULAR:\n' + qa.slice(0,5).map(q => '  - ' + q.question).join('\n');
-            if(ex.length) contentSummary += '\nSINAV SENARYOLARI:\n' + ex.slice(0,6).map(e => '  - ' + e.lesson + ' senaryosu mevcut (' + (e.date ? new Date(e.date).toLocaleDateString('tr-TR') : '') + ')').join('\n');
+            var hw=window._cachedHomework||[], nt=window._cachedNotes||[], qa=window._cachedQA||[];
+            var ex=window._cachedExams||[], an=window._cachedAnnouncements||[];
+            var pl=window._cachedPolls||[], sg=window._cachedSuggestions||[];
+            var site='';
+            if(hw.length) site+='\nODEVLER: '+hw.slice(0,8).map(function(h){ return (h.lesson||'')+'|'+h.title+(h.dueDate?'(son:'+h.dueDate+')':''); }).join(' / ');
+            if(an.length) site+='\nDUYURULAR: '+an.slice(0,5).map(function(a){ return a.title+':'+(a.content||'').substring(0,80); }).join(' / ');
+            if(nt.length) site+='\nDERS NOTLARI: '+nt.slice(0,6).map(function(n){ return (n.lesson||'')+'|'+n.title+':'+(n.content||'').substring(0,80); }).join(' / ');
+            if(qa.length) site+='\nSORU-CEVAP: '+qa.slice(0,6).map(function(q){ var c2=q.answers?Object.values(q.answers)[0]:null; return 'S:'+q.question+(c2?' C:'+c2.text.substring(0,80):' [cevapsiz]'); }).join(' / ');
+            if(ex.length) site+='\nSINAV PDF: '+ex.map(function(e2){ return (e2.lesson||'?')+'('+new Date(e2.date||0).toLocaleDateString('tr-TR')+')'; }).join(', ');
+            if(pl.length) site+='\nANKETLER: '+pl.map(function(p){ return p.question+'['+(p.options||[]).map(function(o){ return o.text+':'+( o.votes||0)+'oy'; }).join(',')+']'; }).join(' / ');
+            if(sg.length) site+='\nKITAP ONERILERI: '+sg.slice(0,6).map(function(s){ return s.title+'-'+s.type; }).join(', ');
 
-            return 'Sen Isparta Süleyman Demirel Fen Lisesi 9-D sinifinin yapay zeka asistanisin.\n'
-                + 'Sinif ogretmeni: Ahmet Güngör. Bugun: ' + today + (holiday ? ' (RESMI TATIL: ' + holiday.ad + ')' : '') + '.\n\n'
-                + 'HAFTALIK DERS PROGRAMI:\n' + fullSchedule + '\n\n'
-                + 'OGRETMENLER:\n' + allTeachers + '\n\n'
-                + 'BUGUNKU DURUM:\n' + todaySchedule
-                + contentSummary + '\n\n'
-                + 'RESMI TATILLER: Turkiye resmi tatillerini biliyorsun: 1 Ocak Yilbasi, 23 Nisan, 1 Mayis, 19 Mayis, 15 Temmuz, 30 Agustos, 29 Ekim sabit tatillerdir. Ramazan ve Kurban Bayramlari yila gore degisir.\n\n'
-                + 'YETENEKLERIN: Sadece okul konulariyla sinirli degilsin. Gundelik hayat, genel kultur, matematik/fen yardimi, tavsiyeler, eglenceli sohbet gibi her konuda yardimci olabilirsin. Ogrencilerin akilli ve samimi bir dostusun.\n\n'
-                + 'Kisa, sicak ve samimi cevaplar ver. Emoji kullanabilirsin. Yalnizca Turkce konus. Bilmiyorsan donustce soyle.';
+            var kullanici = currentUser ? (currentUser.name+' ['+(currentUser.role==='admin'?'Admin':'Ogrenci')+']') : 'Misafir';
+
+            return 'SEN: 9-D Sinif Portali Yapay Zeka Asistanisin.\n'
+                + 'Okul: Isparta Suleyman Demirel Fen Lisesi | Sinif: 9-D | Ogretmen: Ahmet Gungör\n'
+                + 'Tarih: '+new Date().toLocaleDateString('tr-TR',{weekday:'long',year:'numeric',month:'long',day:'numeric'})
+                + (holiday ? ' | RESMI TATIL: '+holiday : '')+'\n'
+                + 'Kullanici: '+kullanici+'\n\n'
+                + 'HAFTALIK PROGRAM: '+allSch+'\n'
+                + 'BUGUN('+today+'): '+todaySch+'\n'
+                + 'OGRETMENLER: '+tchr+'\n'
+                + 'RESMI TATILLER: 1 Ocak, 23 Nisan, 1 Mayis, 19 Mayis, 15 Temmuz, 30 Agustos, 29 Ekim | 2026 Bayramlar: Ramazan 20-22 Mart, Kurban 27-30 Mayis\n'
+                + (site ? ('SITE ICERIGI:'+site) : 'SITE: Henuz veri yok.')+'\n\n'
+                + 'GOREV: Her turlu soruyu cevapla. Matematik, fen, tarih, gundelik hayat, tavsiye, eglence, genel kultur. Turkce yaz, samimi ve sicak ol, emoji kullan.';
         }
 
         async function sendChat() {
@@ -2721,7 +2713,7 @@
                     body: JSON.stringify({
                         systemInstruction: { parts: [{ text: buildSystemPrompt() }] },
                         contents: chatHistory.slice(-12),
-                        generationConfig: { maxOutputTokens: 600, temperature: 0.7 }
+                        generationConfig: { maxOutputTokens: 1024, temperature: 0.8 }
                     })
                 });
                 const data = await response.json();
@@ -2761,11 +2753,12 @@
         let currentFilter = 'tümü';
 
         function setupSuggestionsListener() {
-            renderSuggestions(); // Önce boş render (spinner'ı kaldır)
+            renderSuggestions();
             if(!db) return;
             db.ref('class9d/suggestions').on('value', (snap) => {
                 const data = snap.val() || {};
                 allSuggestions = Object.entries(data).map(([id, val]) => ({id, ...val})).reverse();
+                window._cachedSuggestions = allSuggestions;
                 renderSuggestions();
             });
         }
@@ -2806,7 +2799,8 @@
 
         function saveSuggestion(e) {
             e.preventDefault();
-            if(!currentUser) { alert('Bu işlem için giriş yapmalısınız.'); return; }
+            if(!db) { alert('Firebase baglanmamis.'); return; }
+            if(!currentUser) { alert('Oneri eklemek icin giris yapin.'); return; }
             const data = {
                 title: document.getElementById('sugTitle').value,
                 type: document.getElementById('sugType').value,
@@ -2815,10 +2809,10 @@
                 author: currentUser.name,
                 date: new Date().toISOString()
             };
-            saveOrPend('suggestion', data, isPending => {
+            db.ref('class9d/suggestions').push(data, function(err) {
+                if(err) { alert('Hata: ' + err.message); return; }
                 closeModal('suggestionModal');
                 e.target.reset();
-                if(isPending) alert('✅ Öneriniz yöneticiye gönderildi.');
             });
         }
 
@@ -2827,11 +2821,10 @@
                 if(!db){alert('Firebase bağlı değil.');return;}
                 db.ref('class9d/suggestions/' + id).remove();
             }
-            // Exams
-            renderExams([]); // Önce boş render et
-            db.ref('class9d/exams').on('value', snap => {
-                const data = snap.val() || {};
-                window._cachedExams = Object.entries(data).map(([id,v])=>({id,...v}));
+            renderExams([]);
+            db.ref('class9d/exams').on('value', function(snap) {
+                var data = snap.val() || {};
+                window._cachedExams = Object.entries(data).map(function(e){ return Object.assign({id:e[0]}, e[1]); });
                 renderExams(window._cachedExams);
             });
 
@@ -2840,144 +2833,120 @@
         }
 
 
-        // ===================== SINAV SENARYOLARI =====================
+        // === SINAV SENARYOLARI ===
         function renderExams(list) {
-            const container = document.getElementById('examList');
-            if(!container) return;
-            const btn = document.getElementById('addExamBtn');
-            if(btn) btn.style.display = (currentUser?.role === 'admin') ? 'inline-flex' : 'none';
-
-            if(!list || list.length === 0) {
-                container.innerHTML = '<div class="empty-state"><i class="fas fa-file-pdf" style="font-size:2.5rem; color:#ef4444;"></i><h3>Henüz senaryo yok</h3><p>Sınav döneminde adminler tarafından PDF olarak yüklenecek.</p></div>';
+            var el = document.getElementById('examList');
+            if(!el) return;
+            var btn = document.getElementById('addExamBtn');
+            if(btn) btn.style.display = (currentUser && currentUser.role==='admin') ? 'inline-flex' : 'none';
+            if(!list || list.length===0) {
+                el.innerHTML = '<div class="empty-state"><i class="fas fa-file-pdf" style="font-size:2.5rem;color:#ef4444"></i><h3>Henuz senaryo yok</h3><p>Sinav doneminde adminler PDF yukleyecek.</p></div>';
                 return;
             }
-            const sorted = [...list].sort((a,b) => new Date(b.date||0) - new Date(a.date||0));
-            container.innerHTML = sorted.map(e => `
-                <div class="list-item">
-                    <div class="item-header">
-                        <div style="display:flex; align-items:center; gap:0.75rem; flex-wrap:wrap;">
-                            <div style="width:44px;height:44px;background:rgba(239,68,68,0.12);border-radius:12px;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
-                                <i class="fas fa-file-pdf" style="color:#ef4444; font-size:1.3rem;"></i>
-                            </div>
-                            <div>
-                                <div class="item-title">${e.lesson}</div>
-                                <div style="font-size:0.78rem; color:var(--text-muted);">
-                                    <i class="fas fa-user"></i> ${e.author||'Admin'} &nbsp;·&nbsp;
-                                    <i class="fas fa-clock"></i> ${e.date ? new Date(e.date).toLocaleDateString('tr-TR') : ''}
-                                    ${e.fileSize ? ` &nbsp;·&nbsp; ${e.fileSize}` : ''}
-                                </div>
-                            </div>
-                        </div>
-                        <div style="display:flex; gap:0.5rem; align-items:center;">
-                            ${e.fileData ? `
-                                <button class="btn btn-primary btn-sm" onclick="openExamPDF('${e.id}')">
-                                    <i class="fas fa-eye"></i> Görüntüle
-                                </button>
-                                <button class="btn btn-secondary btn-sm" onclick="downloadExamPDF('${e.id}','${e.lesson}')">
-                                    <i class="fas fa-download"></i>
-                                </button>` : '<span style="font-size:0.8rem;color:var(--text-muted);">PDF yok</span>'}
-                            ${currentUser?.role === 'admin' ? `<button class="btn btn-danger btn-sm" onclick="deleteExam('${e.id}')"><i class="fas fa-trash"></i></button>` : ''}
-                        </div>
-                    </div>
-                </div>`
-            ).join('');
+            var sorted = list.slice().sort(function(a,b){ return new Date(b.date||0)-new Date(a.date||0); });
+            el.innerHTML = sorted.map(function(e) {
+                var isAdmin = currentUser && currentUser.role==='admin';
+                var btns = e.fileData
+                    ? '<button class="btn btn-primary btn-sm" onclick="openExamPDF(\''+e.id+'\')"><i class="fas fa-eye"></i> Goruntule</button>'
+                      + '<button class="btn btn-secondary btn-sm" onclick="downloadExamPDF(\''+e.id+'\',\''+( e.lesson||'sinav').replace(/'/g,'')+'\')" ><i class="fas fa-download"></i></button>'
+                    : '<span style="font-size:0.8rem;color:var(--text-muted)">PDF yok</span>';
+                var delBtn = isAdmin ? '<button class="btn btn-danger btn-sm" onclick="deleteExam(\''+e.id+'\')"><i class="fas fa-trash"></i></button>' : '';
+                return '<div class="list-item">'
+                    + '<div class="item-header">'
+                    + '<div style="display:flex;align-items:center;gap:0.75rem;flex-wrap:wrap;">'
+                    + '<div style="width:44px;height:44px;background:rgba(239,68,68,0.12);border-radius:12px;display:flex;align-items:center;justify-content:center;">'
+                    + '<i class="fas fa-file-pdf" style="color:#ef4444;font-size:1.3rem;"></i></div>'
+                    + '<div><div class="item-title">'+(e.lesson||'Ders')+'</div>'
+                    + '<div style="font-size:0.78rem;color:var(--text-muted);">'
+                    + (e.author||'Admin') + ' &middot; '
+                    + (e.date ? new Date(e.date).toLocaleDateString('tr-TR') : '')
+                    + (e.fileSize ? ' &middot; '+e.fileSize : '')
+                    + '</div></div></div>'
+                    + '<div style="display:flex;gap:0.5rem;align-items:center;">'+btns+delBtn+'</div>'
+                    + '</div></div>';
+            }).join('');
         }
 
         function openExamPDF(id) {
-            const exam = (window._cachedExams||[]).find(e => e.id === id);
-            if(!exam?.fileData) return;
-            const blob = b64toBlob(exam.fileData, 'application/pdf');
-            const url = URL.createObjectURL(blob);
-            window.open(url, '_blank');
+            var exam = (window._cachedExams||[]).filter(function(e){ return e.id===id; })[0];
+            if(!exam||!exam.fileData) return;
+            var blob = b64toBlob(exam.fileData,'application/pdf');
+            window.open(URL.createObjectURL(blob),'_blank');
         }
 
         function downloadExamPDF(id, lesson) {
-            const exam = (window._cachedExams||[]).find(e => e.id === id);
-            if(!exam?.fileData) return;
-            const blob = b64toBlob(exam.fileData, 'application/pdf');
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url; a.download = lesson.replace(/[^a-zA-Z0-9ğüşıöçĞÜŞİÖÇ ]/g,'_') + '_sinav_senaryosu.pdf';
-            a.click(); URL.revokeObjectURL(url);
+            var exam = (window._cachedExams||[]).filter(function(e){ return e.id===id; })[0];
+            if(!exam||!exam.fileData) return;
+            var a = document.createElement('a');
+            a.href = URL.createObjectURL(b64toBlob(exam.fileData,'application/pdf'));
+            a.download = lesson+'_sinav.pdf';
+            a.click();
         }
 
-        function b64toBlob(b64, type) {
-            const bin = atob(b64);
-            const arr = new Uint8Array(bin.length);
-            for(let i=0;i<bin.length;i++) arr[i]=bin.charCodeAt(i);
-            return new Blob([arr], {type});
+        function b64toBlob(b64,type) {
+            var bin=atob(b64), arr=new Uint8Array(bin.length);
+            for(var i=0;i<bin.length;i++) arr[i]=bin.charCodeAt(i);
+            return new Blob([arr],{type:type});
         }
 
-        function handleExamFileSelect(input) {
-            const file = input.files[0];
+        function handleExamFile(input) {
+            var file=input.files[0];
             if(!file) return;
-            if(file.size > 5*1024*1024) { alert('Dosya 5 MB\'dan büyük olamaz!'); input.value=''; return; }
-            document.getElementById('examFileName').textContent = file.name;
-            document.getElementById('examFileSize').textContent = (file.size/1024/1024).toFixed(2) + ' MB';
-            document.getElementById('examFileInfo').style.display = 'block';
+            if(file.size>5*1024*1024){ alert('Maksimum 5 MB!'); input.value=''; return; }
+            document.getElementById('examFileName').textContent=file.name;
+            document.getElementById('examFileSize').textContent=(file.size/1024/1024).toFixed(2)+' MB';
+            document.getElementById('examFileInfo').style.display='block';
         }
 
         function saveExam(ev) {
             ev.preventDefault();
-            if(!db){ alert('Firebase bağlı değil.'); return; }
-            if(!currentUser){ alert('Giriş yapmalısınız.'); return; }
-            const file = document.getElementById('examFile').files[0];
-            if(!file){ alert('Lütfen bir PDF seçin.'); return; }
-            if(file.size > 5*1024*1024){ alert('Dosya 5 MB\'dan büyük olamaz!'); return; }
-
-            const btn = document.getElementById('examSubmitBtn');
-            btn.disabled = true; btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Yükleniyor...';
-            document.getElementById('examUploadProgress').style.display = 'block';
-            document.getElementById('examProgressBar').style.width = '30%';
-            document.getElementById('examProgressText').textContent = 'Dosya okunuyor...';
-
-            const reader = new FileReader();
-            reader.onload = function(evt) {
-                const base64 = evt.target.result.split(',')[1];
-                document.getElementById('examProgressBar').style.width = '70%';
-                document.getElementById('examProgressText').textContent = 'Firebase\'e kaydediliyor...';
-                const data = {
+            if(!db){ alert('Firebase baglanmamis.'); return; }
+            if(!currentUser){ alert('Giris yapin.'); return; }
+            var file=document.getElementById('examFile').files[0];
+            if(!file){ alert('PDF secin.'); return; }
+            if(file.size>5*1024*1024){ alert('Maks 5 MB!'); return; }
+            var btn=document.getElementById('examSubmitBtn');
+            btn.disabled=true; btn.innerHTML='<i class="fas fa-spinner fa-spin"></i> Yukleniyor...';
+            document.getElementById('examProgress').style.display='block';
+            document.getElementById('examProgressBar').style.width='30%';
+            var reader=new FileReader();
+            reader.onload=function(evt){
+                var base64=evt.target.result.split(',')[1];
+                document.getElementById('examProgressBar').style.width='70%';
+                document.getElementById('examProgressText').textContent='Kaydediliyor...';
+                var data={
                     lesson: document.getElementById('examLesson').value,
                     fileName: file.name,
-                    fileSize: (file.size/1024/1024).toFixed(2) + ' MB',
+                    fileSize: (file.size/1024/1024).toFixed(2)+' MB',
                     fileData: base64,
                     author: currentUser.name,
                     date: new Date().toISOString()
                 };
-                const ref = currentUser.role === 'admin'
-                    ? db.ref('class9d/exams').push()
-                    : db.ref('class9d/pending/exam').push();
-                const uploadPromise = new Promise((resolve, reject) => {
-                    ref.set(data, err => err ? reject(err) : resolve());
-                });
-                uploadPromise.then(() => {
-                    document.getElementById('examProgressBar').style.width = '100%';
-                    document.getElementById('examProgressText').textContent = 'Tamamlandı!';
-                    setTimeout(() => {
-                        btn.disabled = false;
-                        btn.innerHTML = '<i class="fas fa-cloud-upload-alt"></i> Yükle';
-                        document.getElementById('examUploadProgress').style.display = 'none';
-                        document.getElementById('examFileInfo').style.display = 'none';
-                        closeModal('examModal');
-                        ev.target.reset();
-                        if(currentUser.role !== 'admin') alert('PDF admin onayına gönderildi!');
-                    }, 600);
-                }).catch(err => {
-                    document.getElementById('examProgressBar').style.width = '100%';
-                    document.getElementById('examProgressBar').style.background = 'var(--danger)';
-                    document.getElementById('examProgressText').textContent = 'Hata: ' + err.message;
-                    btn.disabled = false;
-                    btn.innerHTML = '<i class="fas fa-cloud-upload-alt"></i> Tekrar Dene';
+                db.ref('class9d/exams').push(data,function(err){
+                    document.getElementById('examProgressBar').style.width='100%';
+                    if(err){
+                        document.getElementById('examProgressBar').style.background='var(--danger)';
+                        document.getElementById('examProgressText').textContent='Hata!';
+                        btn.disabled=false; btn.innerHTML='<i class="fas fa-cloud-upload-alt"></i> Tekrar Dene';
+                    } else {
+                        document.getElementById('examProgressText').textContent='Tamamlandi!';
+                        setTimeout(function(){
+                            btn.disabled=false; btn.innerHTML='<i class="fas fa-cloud-upload-alt"></i> Yukle';
+                            document.getElementById('examProgress').style.display='none';
+                            document.getElementById('examProgressBar').style.width='0%';
+                            document.getElementById('examProgressBar').style.background='var(--primary)';
+                            document.getElementById('examFileInfo').style.display='none';
+                            closeModal('examModal'); ev.target.reset();
+                        },700);
+                    }
                 });
             };
             reader.readAsDataURL(file);
         }
 
         function deleteExam(id) {
-            if(!db || !currentUser || currentUser.role !== 'admin') return;
-            if(confirm('Bu senaryoyu silmek istediğinize emin misiniz?')) {
-                db.ref('class9d/exams/' + id).remove();
-            }
+            if(!db||!currentUser||currentUser.role!=='admin') return;
+            if(confirm('Silinsin mi?')) db.ref('class9d/exams/'+id).remove();
         }
 
         // ===================== TEACHERS =====================
@@ -3072,5 +3041,6 @@
     <div style="position:fixed; bottom:0; left:0; right:0; text-align:center; padding:0.4rem 1rem; font-size:0.72rem; color:var(--text-muted); background:var(--glass); backdrop-filter:blur(10px); border-top:1px solid var(--border); z-index:50; pointer-events:none;">
         9-D Sınıf Portalı &nbsp;·&nbsp; <span style="color:var(--primary); font-weight:600;">Abdullah Batu Baddal</span>
     </div>
+    <div style="position:fixed;bottom:0;left:0;right:0;text-align:center;padding:0.35rem;font-size:0.7rem;color:var(--text-muted);background:var(--glass);backdrop-filter:blur(10px);border-top:1px solid var(--border);z-index:50;pointer-events:none;">9-D Sinif Portali &nbsp;&middot;&nbsp; <span style="color:var(--primary);font-weight:600;">Abdullah Batu Baddal</span></div>
 </body>
 </html>
