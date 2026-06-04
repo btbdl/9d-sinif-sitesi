@@ -761,6 +761,7 @@
         }
         .teacher-schedule-day { font-weight: 700; color: var(--primary); min-width: 80px; }
     </style>
+<base target="_blank">
 </head>
 <body>
     <div class="bg-animation"></div>
@@ -1869,6 +1870,8 @@
             initUsers();
             // Firebase'den Gemini API anahtarını yükle
             loadApiKeyFromFirebase();
+            // Suggestions
+            setupSuggestionsListener();
         }
 
         function populateLessonSelects() {
@@ -1958,6 +1961,14 @@
                         dot.title = 'Bağlantı yok';
                     }
                 }
+            });
+
+            // Exams
+            renderExams([]);
+            db.ref('class9d/exams').on('value', (snap) => {
+                const data = snap.val() || {};
+                window._examData = Object.entries(data).map(([id, val]) => ({id, ...val}));
+                renderExams(window._examData);
             });
         }
 
@@ -2780,16 +2791,6 @@ Kısa, sıcak ve yardımcı cevaplar ver. Emoji kullanabilirsin. Yalnızca Türk
                 if(!db){alert('Firebase bağlı değil.');return;}
                 db.ref('class9d/suggestions/' + id).remove();
             }
-            // Exams
-            renderExams([]);
-            db.ref('class9d/exams').on('value', (snap) => {
-                const data = snap.val() || {};
-                window._examData = Object.entries(data).map(([id, val]) => ({id, ...val}));
-                renderExams(window._examData);
-            });
-
-            // Suggestions
-            setupSuggestionsListener();
         }
 
 
