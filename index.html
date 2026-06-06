@@ -761,7 +761,6 @@
         }
         .teacher-schedule-day { font-weight: 700; color: var(--primary); min-width: 80px; }
     </style>
-<base target="_blank">
 </head>
 <body>
     <div class="bg-animation"></div>
@@ -1693,15 +1692,32 @@
                     : type === 'memory' ? 'class9d/memories'
                     : type === 'poll' ? 'class9d/polls' : null;
                 if(!dest) return;
-                db.ref(dest).push(item);
-                db.ref('class9d/pending/' + type + '/' + id).remove();
+                db.ref(dest).push(item, err => {
+                    if(!err){
+                        db.ref('class9d/pending/' + type + '/' + id).remove();
+                    }
+                });
             });
         }
 
         function rejectPending(type, id) {
-            if(confirm('Bu isteği reddetmek istediğinize emin misiniz?')) {
-                db.ref('class9d/pending/' + type + '/' + id).remove();
-            }
+            if(!confirm('Bu isteği reddetmek istediğinize emin misiniz?')) return;
+
+            const ref = db.ref('class9d/pending/' + type + '/' + id);
+
+            ref.once('value', snap => {
+                const item = snap.val();
+                if(!item) return;
+
+                item.status = 'rejected';
+                item.reviewDate = new Date().toISOString();
+
+                db.ref('class9d/rejected/' + type).push(item, err => {
+                    if(!err){
+                        ref.remove();
+                    }
+                });
+            });
         }
 
         function addStudent(e) {
@@ -1732,6 +1748,7 @@
                     : type === 'announcement' ? 'class9d/announcements'
                     : type === 'question' ? 'class9d/questions'
                     : type === 'suggestion' ? 'class9d/suggestions'
+                    : type === 'memory' ? 'class9d/memories'
                     : type === 'poll' ? 'class9d/polls' : null;
                 if(ref) db.ref(ref).push(data, err => { if(!err && successCb) successCb(false); });
             } else {
