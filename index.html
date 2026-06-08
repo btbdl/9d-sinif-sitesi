@@ -761,6 +761,7 @@
         }
         .teacher-schedule-day { font-weight: 700; color: var(--primary); min-width: 80px; }
     </style>
+<base target="_blank">
 </head>
 <body>
     <div class="bg-animation"></div>
@@ -1621,7 +1622,7 @@
                 const items = [];
                 Object.entries(data).forEach(([type, entries]) => {
                     Object.entries(entries).forEach(([id, val]) => {
-                        items.push({id, type, ...val});
+                        items.push({id, pendingType: type, contentType: val.type, ...val});
                         total++;
                     });
                 });
@@ -1651,8 +1652,8 @@
                                 </div>
                             </div>
                             <div class="pending-actions">
-                                <button class="btn btn-success btn-sm" onclick="approvePending('${item.type}','${item.id}')"><i class="fas fa-check"></i> Onayla</button>
-                                <button class="btn btn-danger btn-sm" onclick="rejectPending('${item.type}','${item.id}')"><i class="fas fa-times"></i> Reddet</button>
+                                <button class="btn btn-success btn-sm" onclick="approvePending('${item.pendingType}','${item.id}')"><i class="fas fa-check"></i> Onayla</button>
+                                <button class="btn btn-danger btn-sm" onclick="rejectPending('${item.pendingType}','${item.id}')"><i class="fas fa-times"></i> Reddet</button>
                             </div>
                         </div>
                     `).join('');
@@ -1679,45 +1680,33 @@
             });
         }
 
-        function approvePending(type, id) {
+        function approvePending(pendingType, id) {
             if(!db) return;
-            db.ref('class9d/pending/' + type + '/' + id).once('value', snap => {
+            db.ref('class9d/pending/' + pendingType + '/' + id).once('value', snap => {
                 const item = snap.val();
                 if(!item) return;
-                const dest = type === 'homework' ? 'class9d/homework'
-                    : type === 'note' ? 'class9d/notes'
-                    : type === 'announcement' ? 'class9d/announcements'
-                    : type === 'question' ? 'class9d/questions'
-                    : type === 'suggestion' ? 'class9d/suggestions'
-                    : type === 'memory' ? 'class9d/memories'
-                    : type === 'poll' ? 'class9d/polls' : null;
+                const dest = pendingType === 'homework' ? 'class9d/homework'
+                    : pendingType === 'note' ? 'class9d/notes'
+                    : pendingType === 'announcement' ? 'class9d/announcements'
+                    : pendingType === 'question' ? 'class9d/questions'
+                    : pendingType === 'suggestion' ? 'class9d/suggestions'
+                    : pendingType === 'memory' ? 'class9d/memories'
+                    : pendingType === 'poll' ? 'class9d/polls' : null;
                 if(!dest) return;
-                db.ref(dest).push(item, err => {
-                    if(!err){
-                        db.ref('class9d/pending/' + type + '/' + id).remove();
-                    }
-                });
+                // Clean the item before pushing: remove internal metadata
+                const cleanItem = { ...item };
+                delete cleanItem.pendingType;
+                delete cleanItem.contentType;
+                db.ref(dest).push(cleanItem);
+                db.ref('class9d/pending/' + pendingType + '/' + id).remove();
             });
         }
 
-        function rejectPending(type, id) {
-            if(!confirm('Bu isteği reddetmek istediğinize emin misiniz?')) return;
-
-            const ref = db.ref('class9d/pending/' + type + '/' + id);
-
-            ref.once('value', snap => {
-                const item = snap.val();
-                if(!item) return;
-
-                item.status = 'rejected';
-                item.reviewDate = new Date().toISOString();
-
-                db.ref('class9d/rejected/' + type).push(item, err => {
-                    if(!err){
-                        ref.remove();
-                    }
-                });
-            });
+        function rejectPending(pendingType, id) {
+            if(!db) return;
+            if(confirm('Bu isteği reddetmek istediğinize emin misiniz?')) {
+                db.ref('class9d/pending/' + pendingType + '/' + id).remove();
+            }
         }
 
         function addStudent(e) {
@@ -1748,7 +1737,6 @@
                     : type === 'announcement' ? 'class9d/announcements'
                     : type === 'question' ? 'class9d/questions'
                     : type === 'suggestion' ? 'class9d/suggestions'
-                    : type === 'memory' ? 'class9d/memories'
                     : type === 'poll' ? 'class9d/polls' : null;
                 if(ref) db.ref(ref).push(data, err => { if(!err && successCb) successCb(false); });
             } else {
